@@ -1,35 +1,20 @@
-import express from 'express';
-import multer from 'multer';
-import {
-    getAllServices,
-    getServiceById,
-    createService,
-    updateService,
-    deleteService,
-    getServicesByCentre,
-    getMostBookedServices
-} from '../controllers/serviceController.js';
-import { protect } from '../middleware/authMiddleware.js';
-import { admin } from '../middleware/authMiddleware.js';
+import express from "express";
+import * as serviceController from "../controllers/serviceController.js";
+import protect from "../middleware/protect.js";
+import authorize from "../middleware/authorize.js";
+import validate from "../middleware/validate.js";
+import { createServiceSchema, updateServiceSchema } from "../validators/serviceValidators.js";
 
 const router = express.Router();
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
 
-const upload = multer({ storage });
-router.get('/', getAllServices);
-router.get('/most-booked', getMostBookedServices);
-router.get('/:id', getServiceById);
-router.get('/centre/:centreId', getServicesByCentre);
+// public
+router.get("/", serviceController.getAllServices);
+router.get("/:id", serviceController.getService);
 
-router.post('/', protect, upload.fields([{ name: 'photos', maxCount: 10 }, { name: 'videos', maxCount: 5 }]), createService);
-router.put('/:id', protect, admin, updateService);
-router.delete('/:id', protect, admin, deleteService);
+// protected — service role only
+router.post("/", protect, authorize("service"), validate(createServiceSchema), serviceController.createService);
+router.get("/my/services", protect, authorize("service"), serviceController.getMyServices);
+router.put("/:id", protect, authorize("service"), validate(updateServiceSchema), serviceController.updateService);
+router.delete("/:id", protect, authorize("service"), serviceController.deleteService);
 
 export default router;

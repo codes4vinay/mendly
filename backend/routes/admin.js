@@ -1,24 +1,17 @@
-import express from 'express';
-import {
-    getAllUsers,
-    getAllServiceCentres,
-    createServiceCentre,
-    updateServiceCentre,
-    deleteServiceCentre,
-    getDashboardStats
-} from '../controllers/adminController.js';
-import { protect } from '../middleware/authMiddleware.js';
-import { admin } from '../middleware/authMiddleware.js';
+import express from "express";
+import * as adminController from "../controllers/adminController.js";
+import protect from "../middleware/protect.js";
+import authorize from "../middleware/authorize.js";
 
 const router = express.Router();
-router.get('/centres', getAllServiceCentres);
-router.use(protect);
-router.use(admin);
 
-router.get('/users', getAllUsers);
-router.post('/centres', createServiceCentre);
-router.put('/centres/:id', updateServiceCentre);
-router.delete('/centres/:id', deleteServiceCentre);
-router.get('/dashboard', getDashboardStats);
+// all admin routes — protected + admin role only
+router.use(protect, authorize("admin"));
+
+router.get("/stats", adminController.getDashboardStats);
+router.get("/users", adminController.getAllUsers);
+router.put("/users/:id/toggle", adminController.toggleUserStatus);
+router.put("/service-centres/:id/toggle", adminController.toggleServiceCentreStatus);
+router.put("/reviews/:id/toggle", adminController.toggleReviewVisibility);
 
 export default router;

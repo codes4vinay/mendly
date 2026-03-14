@@ -1,175 +1,112 @@
+import Booking from "../models/Booking.js";
+import Service from "../models/Service.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import ApiError from "../utils/apiError.js";
+import apiResponse from "../utils/apiResponse.js";
 
-import Booking from '../models/Booking.js';
-import Service from '../models/Service.js';
-import ServiceCentre from '../models/ServiceCentres.js';
-import Notification from '../models/Notification.js';
-import mongoose from 'mongoose';
-const getUserId = (req) => (req.user?._id ?? req.user?.id ?? null);
-export const createBooking = async (req, res) => {
-    try {
-        const { service, serviceCentre, date, time, notes } = req.body;
-        const user = getUserId(req);
-        if (!user) return res.status(401).json({ message: 'Unauthorized' });
+// ─── Create Booking ───────────────────────────────────────────
+export const createBooking = asyncHandler(async (req, res) => {
+    const { service: serviceId, serviceCentre, scheduledAt, totalAmount, notes } = req.body;
 
-        if (!service || !date || !time) {
-            return res.status(400).json({ message: 'service, date and time are required' });
-        }
+    const service = await Service.findById(serviceId);
+    if (!service) throw new ApiError(404, "Service not found");
+    if (!service.isActive) throw new ApiError(400, "Service is not available");
 
-        const serviceExists = await Service.findById(service).lean();
-        if (!serviceExists) return res.status(404).json({ message: 'Service not found' });
+    const booking = await Booking.create({
+        customer: req.user._id,
+        service: serviceId,
+        serviceCentre,
+        scheduledAt,
+        totalAmount,
+        notes,
+    });
 
-        let centreId = serviceCentre;
+    return apiResponse(res, 201, "Booking created successfully", { booking });
+});
 
-        if (!centreId) {
-            const arr = serviceExists.availableAt?.length
-                ? serviceExists.availableAt
-                : serviceExists.serviceCentres?.length
-                    ? serviceExists.serviceCentres
-                    : [];
+// ─── Get My Bookings (customer) ───────────────────────────────
+export const getMyBookings = asyncHandler(async (req, res) => {
+    const { status, page = 1, limit = 10 } = req.query;
 
-            if (arr.length === 0)
-                return res.status(400).json({ message: 'No service centre available for this service' });
+    const filter = { customer: req.user._id };
+    if (status) filter.status = status;
 
-            centreId = arr[0];
-        }
+    const total = await Booking.countDocuments(filter);
+    const bookings = await Booking.find(filter)
+        .populate("service", "name category price")
+        .populate("serviceCentre", "name address phone")
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
 
-        if (!mongoose.Types.ObjectId.isValid(centreId))
-            return res.status(400).json({ message: 'Invalid serviceCentre id' });
+    return apiResponse(res, 200, "Bookings fetched successfully", {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+        bookings,
+    });
+});
 
-        const centreExists = await ServiceCentre.findById(centreId);
-        if (!centreExists) return res.status(404).json({ message: 'Service centre not found' });
+// ─── Get Centre Bookings (service owner) ──────────────────────
+export const getCentreBookings = asyncHandler(async (req, res) => {
+    const { status, page = 1, limit = 10 } = req.query;
 
-        const centreList = serviceExists.availableAt?.length
-            ? serviceExists.availableAt.map(String)
-            : serviceExists.serviceCentres?.map(String) ?? [];
+    const filter = { serviceCentre: req.params.centreId };
+    if (status) filter.status = status;
 
-        if (!centreList.includes(centreId.toString())) {
-            return res.status(400).json({ message: 'Service not available at this centre' });
-        }
+    const total = await Booking.countDocuments(filter);
+    const bookings = await Booking.find(filter)
+        .populate("customer", "name email phone")
+        .populate("service", "name category price")
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
 
-        const totalPrice = serviceExists.price ?? 0;
+    return apiResponse(res, 200, "Bookings fetched successfully", {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+        bookings,
+    });
+});
 
-        const booking = await Booking.create({
-            user,
-            service,
-            serviceCentre: centreId,
-            date,
-            time,
-            notes,
-            totalPrice
-        });
-        try {
-            await Notification.create({
-                centre: centreId,
-                booking: booking._id,
-                message: `New booking for ${serviceExists.serviceName}`
-            });
-        } catch (err) {
-            console.error("Notification error:", err);
-        }
+// ─── Get Single Booking ───────────────────────────────────────
+export const getBooking = asyncHandler(async (req, res) => {
+    const booking = await Booking.findById(req.params.id)
+        .populate("service", "name category price")
+        .populate("serviceCentre", "name address phone")
+        .populate("customer", "name email phone");
 
-        const populated = await Booking.findById(booking._id)
-            .populate('service')
-            .populate('serviceCentre');
+    if (!booking) throw new ApiError(404, "Booking not found");
 
-        res.status(201).json({ message: "Booking created successfully", booking: populated });
-
-    } catch (error) {
-        console.error('createBooking:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+    // only customer or service centre owner can view
+    const isCustomer = booking.customer._id.toString() === req.user._id.toString();
+    const isCentre = booking.serviceCentre.toString() === req.user._id.toString();
+    if (!isCustomer && !isCentre && req.user.role !== "admin") {
+        throw new ApiError(403, "Not authorized to view this booking");
     }
-};
-export const getUserBookings = async (req, res) => {
-    try {
-        const userId = getUserId(req);
-        if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
-        const bookings = await Booking.find({ user: userId })
-            .populate('service')
-            .populate('serviceCentre')
-            .sort({ createdAt: -1 });
+    return apiResponse(res, 200, "Booking fetched successfully", { booking });
+});
 
-        res.json({ bookings });
-    } catch (error) {
-        console.error('getUserBookings:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+// ─── Update Booking Status ────────────────────────────────────
+export const updateBookingStatus = asyncHandler(async (req, res) => {
+    const { status, cancellationReason } = req.body;
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) throw new ApiError(404, "Booking not found");
+
+    // only service centre can confirm/complete, customer can cancel
+    if (status === "cancelled") {
+        booking.cancellationReason = cancellationReason;
     }
-};
-export const getCentreBookings = async (req, res) => {
-    try {
-        let centreId = req.user?.serviceCentre || req.query.centreId;
 
-        if (!centreId)
-            return res.status(400).json({ message: "Service centre ID required" });
-
-        const bookings = await Booking.find({ serviceCentre: centreId })
-            .populate('user', 'name email')
-            .populate('service')
-            .populate('serviceCentre')
-            .sort({ createdAt: -1 });
-
-        res.status(200).json(bookings);
-
-    } catch (error) {
-        console.error('getCentreBookings:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+    if (status === "completed") {
+        booking.completedAt = new Date();
     }
-};
-export const getAllBookings = async (req, res) => {
-    try {
-        const bookings = await Booking.find()
-            .populate('user')
-            .populate('service')
-            .populate('serviceCentre')
-            .sort({ createdAt: -1 });
 
-        res.json({ bookings });
-    } catch (error) {
-        console.error('getAllBookings:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-export const updateBookingStatus = async (req, res) => {
-    try {
-        const { status } = req.body;
+    booking.status = status;
+    await booking.save();
 
-        const valid = ["pending", "confirmed", "completed", "cancelled"];
-        if (!valid.includes(status))
-            return res.status(400).json({ message: "Invalid status" });
-
-        const booking = await Booking.findByIdAndUpdate(
-            req.params.id,
-            { status, updatedAt: Date.now() },
-            { new: true }
-        );
-
-        if (!booking)
-            return res.status(404).json({ message: "Booking not found" });
-
-        res.json({ message: "Status updated", booking });
-
-    } catch (error) {
-        console.error('updateBookingStatus:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-export const cancelBooking = async (req, res) => {
-    try {
-        const userId = getUserId(req);
-
-        const booking = await Booking.findOneAndUpdate(
-            { _id: req.params.id, user: userId },
-            { status: "cancelled", updatedAt: Date.now() },
-            { new: true }
-        );
-
-        if (!booking)
-            return res.status(404).json({ message: "Booking not found or not allowed" });
-
-        res.json({ message: "Booking cancelled", booking });
-
-    } catch (error) {
-        console.error('cancelBooking:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
+    return apiResponse(res, 200, "Booking status updated successfully", { booking });
+});
