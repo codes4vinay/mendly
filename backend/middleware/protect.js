@@ -6,14 +6,12 @@ import User from "../models/User.js";
 const protect = asyncHandler(async (req, res, next) => {
     let token;
 
-    // access token still comes from Authorization header
     if (req.headers.authorization?.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) throw new ApiError(401, "Not authorized, no token");
 
-    // verify access token
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
     const user = await User.findById(decoded.id).select("-password");
@@ -23,5 +21,13 @@ const protect = asyncHandler(async (req, res, next) => {
     req.user = user;
     next();
 });
+
+// separate middleware — use only on routes that need verified email
+export const requireEmailVerified = (req, res, next) => {
+    if (!req.user.isEmailVerified) {
+        throw new ApiError(403, "Please verify your email first");
+    }
+    next();
+};
 
 export default protect;

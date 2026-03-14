@@ -1,132 +1,124 @@
+import { Routes, Route } from "react-router-dom";
+import { ProtectedRoute, RoleRoute } from "./routes/ProtectedRoute";
+import useTheme from "./hooks/useTheme";
 
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+// auth pages
 import Login from "./pages/auth/Login";
-import Signup from "./pages/auth/Signup";
-import UserDashboard from "./pages/dashboard/UserDashboard";
-import ServiceDashboard from "./pages/dashboard/ServiceDashboard";
-import AdminDashboard from "./pages/dashboard/AdminDashboard";
-import Services from "./pages/Services";
-import SubmitRequest from "./pages/SubmitRequest";
-import TrackRequests from "./pages/TrackRequests";
-import ProtectedRoute from "./components/ProtectedRoute";
-import jwtDecode from "jwt-decode";
+import Register from "./pages/auth/Register";
+import VerifyOtp from "./pages/auth/VerifyOtp";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [theme, setTheme] = useState("light");
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUser({ email: decoded.email, role: decoded.role });
-      } catch {
-        localStorage.removeItem("token");
-      }
-    }
-  }, []);
+// user pages
+import Home from "./pages/user/Home";
+import Services from "./pages/user/Services";
+import ServiceDetail from "./pages/user/ServiceDetail";
+import Marketplace from "./pages/user/Marketplace";
+import ProductDetail from "./pages/user/ProductDetail";
+import Cart from "./pages/user/Cart";
+import Checkout from "./pages/user/Checkout";
+import MyBookings from "./pages/user/MyBookings";
+import MyOrders from "./pages/user/MyOrders";
+import Profile from "./pages/user/Profile";
+import Notifications from "./pages/user/Notifications";
+import ServiceCentres from "./pages/user/ServiceCentres";
+import ServiceCentreDetail from "./pages/user/ServiceCentreDetail";
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-  };
+// service pages
+import ServiceDashboard from "./pages/service/Dashboard";
+import ManageCentre from "./pages/service/ManageCentre";
+import ManageServices from "./pages/service/ManageServices";
+import ManageProducts from "./pages/service/ManageProducts";
+import CentreBookings from "./pages/service/CentreBookings";
+import CentreOrders from "./pages/service/CentreOrders";
+import CentreReviews from "./pages/service/CentreReviews";
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
-  };
+// admin pages
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminUsers from "./pages/admin/Users";
+import AdminServiceCentres from "./pages/admin/ServiceCentres";
+import AdminBookings from "./pages/admin/Bookings";
+import AdminOrders from "./pages/admin/Orders";
+import AdminReviews from "./pages/admin/Reviews";
+
+// shared
+import NotFound from "./pages/NotFound";
+
+const App = () => {
+  useTheme(); // initializes dark mode
 
   return (
-    <div
-      className={
-        theme === "light"
-          ? "bg-gray-50 text-gray-800 min-h-screen"
-          : "bg-gray-900 text-white min-h-screen"
-      }
-    >
-      <Router>
-        <Navbar
-          user={user}
-          handleLogout={handleLogout}
-          theme={theme}
-          toggleTheme={toggleTheme}
-        />
+    <Routes>
+      {/* public routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/services" element={<Services />} />
+      <Route path="/services/:id" element={<ServiceDetail />} />
+      <Route path="/service-centres" element={<ServiceCentres />} />
+      <Route path="/service-centres/:id" element={<ServiceCentreDetail />} />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/marketplace/:id" element={<ProductDetail />} />
 
-        <div className="pt-16">
-          <Routes>
-            
-            <Route path="/" element={<Home user={user} theme={theme} />} />
-            <Route path="/about" element={<About theme={theme} />} />
-            <Route path="/contact" element={<Contact theme={theme} />} />
+      {/* user protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<RoleRoute allowedRoles={["user"]} />}>
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/my-orders" element={<MyOrders />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/notifications" element={<Notifications />} />
+        </Route>
+      </Route>
 
-            
-            <Route
-              path="/login"
-              element={<Login setUser={setUser} theme={theme} />}
-            />
-            <Route
-              path="/signup"
-              element={<Signup setUser={setUser} theme={theme} />}
-            />
+      {/* service centre protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<RoleRoute allowedRoles={["service"]} />}>
+          <Route path="/service-dashboard" element={<ServiceDashboard />} />
+          <Route path="/service-dashboard/centre" element={<ManageCentre />} />
+          <Route
+            path="/service-dashboard/services"
+            element={<ManageServices />}
+          />
+          <Route
+            path="/service-dashboard/products"
+            element={<ManageProducts />}
+          />
+          <Route
+            path="/service-dashboard/bookings"
+            element={<CentreBookings />}
+          />
+          <Route path="/service-dashboard/orders" element={<CentreOrders />} />
+          <Route
+            path="/service-dashboard/reviews"
+            element={<CentreReviews />}
+          />
+        </Route>
+      </Route>
 
-            
-            <Route path="/services" element={<Services theme={theme} />} />
+      {/* admin protected routes */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route
+            path="/admin/service-centres"
+            element={<AdminServiceCentres />}
+          />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
+        </Route>
+      </Route>
 
-            
-            <Route
-              path="/submit-request"
-              element={
-                <ProtectedRoute allowedRoles={["user"]}>
-                  <SubmitRequest theme={theme} />
-                </ProtectedRoute>
-              }
-            />
-
-            
-            <Route
-              path="/track-requests"
-              element={
-                <ProtectedRoute allowedRoles={["user"]}>
-                  <TrackRequests theme={theme} />
-                </ProtectedRoute>
-              }
-            />
-
-            
-            <Route
-              path="/dashboard/user"
-              element={
-                <ProtectedRoute allowedRoles={["user"]}>
-                  <UserDashboard theme={theme} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/dashboard/service"
-              element={
-                <ProtectedRoute allowedRoles={["serviceCenter"]}>
-                  <ServiceDashboard theme={theme} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/dashboard/admin"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <AdminDashboard theme={theme} />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </div>
-      </Router>
-    </div>
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
-}
+};
+
+export default App;
