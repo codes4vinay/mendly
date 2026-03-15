@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "../app/store";
 import { setCredentials, logout } from "../features/auth/authSlice";
 
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = "https://mendly-backend-fnbdhxakadhvezet.centralindia-01.azurewebsites.net/api";
 
 const api = axios.create({
     baseURL: BASE_URL,
