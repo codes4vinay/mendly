@@ -64,17 +64,19 @@ const ServiceDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [centreRes, servicesRes, productsRes] = await Promise.all([
-        api.get("/service-centres/my/centre"),
+      const centreRes = await api.get("/service-centres/my/centre");
+      const serviceCentre = centreRes.data.data.serviceCentre;
+      setCentre(serviceCentre);
+
+      const [servicesRes, productsRes] = await Promise.all([
         api.get("/services/my/services"),
         api.get("/products/my/products"),
       ]);
 
-      setCentre(centreRes.data.data.serviceCentre);
       setServices(servicesRes.data.data.services);
       setProducts(productsRes.data.data.products);
 
-      const centreId = centreRes.data.data.serviceCentre._id;
+      const centreId = serviceCentre._id;
       const [bookingsRes, ordersRes] = await Promise.all([
         api.get(`/bookings/centre/${centreId}?limit=5`),
         api.get(`/orders/centre/${centreId}?limit=5`),
@@ -83,7 +85,14 @@ const ServiceDashboard = () => {
       setBookings(bookingsRes.data.data.bookings);
       setOrders(ordersRes.data.data.orders);
     } catch (error) {
+      if (error.response?.status === 404) {
+        toast.info("Set up your service centre to access the dashboard.");
+        navigate("/service-dashboard/centre", { replace: true });
+        return;
+      }
+
       console.error(error);
+      toast.error(error.response?.data?.message || "Failed to load dashboard");
     } finally {
       setLoading(false);
     }
