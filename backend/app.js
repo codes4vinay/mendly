@@ -19,6 +19,7 @@ import notificationRoutes from "./routes/notification.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
 import uploadRoutes from "./routes/upload.js";
+import { isOriginAllowed, allowedOrigins } from "./utils/allowedOrigins.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,11 +28,19 @@ const app = express();
 
 // ─── Security ──────────────────────────────────────────────────
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+        if (isOriginAllowed(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
+console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 
 // ─── Core Middleware ───────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
