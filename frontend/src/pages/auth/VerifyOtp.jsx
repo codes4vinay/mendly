@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Wrench, Loader2 } from "lucide-react";
@@ -12,8 +13,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { authApi } from "@/features/auth/authApi";
+import { updateUser } from "@/features/auth/authSlice";
 
 const VerifyOtp = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { email, purpose } = location.state || {};
@@ -54,8 +57,12 @@ const VerifyOtp = () => {
       toast.success(
         purpose === "verify_email" ? "Email verified!" : "OTP verified!",
       );
-      if (purpose === "verify_email") navigate("/");
-      else navigate("/reset-password", { state: { email } });
+      if (purpose === "verify_email") {
+        dispatch(updateUser({ isEmailVerified: true }));
+        navigate("/");
+      } else {
+        navigate("/reset-password", { state: { email } });
+      }
     } catch (error) {
       toast.error(error.response?.data?.message || "Invalid OTP");
     } finally {

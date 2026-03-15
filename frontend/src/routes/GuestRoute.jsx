@@ -6,6 +6,15 @@ const GuestRoute = () => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) return <Outlet />;
+  if (user && user.isEmailVerified === false) {
+    return (
+      <Navigate
+        to="/verify-otp"
+        replace
+        state={{ email: user.email, purpose: "verify_email" }}
+      />
+    );
+  }
 
   // redirect based on role
   if (user?.role === "admin") return <Navigate to="/admin" replace />;
