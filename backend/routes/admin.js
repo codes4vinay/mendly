@@ -18,6 +18,14 @@ router.put("/users/:id/toggle", adminController.toggleUserStatus);
 router.get("/service-centres", adminController.getAllServiceCentres);
 router.put("/service-centres/:id/toggle", adminController.toggleServiceCentreStatus);
 
+// services
+router.get("/services", adminController.getAllServices);
+router.put("/services/:id/toggle", adminController.toggleServiceStatus);
+
+// products
+router.get("/products", adminController.getAllProducts);
+router.put("/products/:id/toggle", adminController.toggleProductStatus);
+
 // bookings
 router.get("/bookings", adminController.getAllBookings);
 

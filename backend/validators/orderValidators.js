@@ -11,7 +11,7 @@ export const createOrderSchema = z.object({
     items: z.array(orderItemSchema).min(1, "Order must have at least one item"),
     totalAmount: z.number({ required_error: "Total amount is required" }).min(0),
     payment: z.object({
-        method: z.enum(["cash", "upi", "card", "netbanking"]).default("cash"),
+        method: z.enum(["cash", "upi", "card", "netbanking", "razorpay"]).default("cash"),
     }),
     deliveryAddress: z.object({
         street: z.string().optional(),
@@ -27,4 +27,10 @@ export const updateOrderStatusSchema = z.object({
         { message: "Invalid status" }
     ),
     cancellationReason: z.string().optional(),
+});
+
+export const verifyOrderPaymentSchema = z.object({
+    razorpayOrderId: z.string({ required_error: "Razorpay order ID is required" }),
+    razorpayPaymentId: z.string({ required_error: "Razorpay payment ID is required" }),
+    razorpaySignature: z.string({ required_error: "Razorpay signature is required" }),
 });

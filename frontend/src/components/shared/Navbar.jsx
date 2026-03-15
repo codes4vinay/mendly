@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
   Wrench,
@@ -26,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import useAuth from "@/hooks/useAuth";
 import useTheme from "@/hooks/useTheme";
 import { logout } from "@/features/auth/authSlice";
+import { fetchNotifications } from "@/features/notification/notificationSlice";
 import api from "@/utils/axios";
 
 const Navbar = () => {
@@ -34,6 +35,14 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { unreadCount } = useSelector((state) => state.notification);
+
+  // Fetch notifications on mount if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchNotifications({ page: 1, limit: 20 }));
+    }
+  }, [isAuthenticated, dispatch]);
 
   const handleLogout = async () => {
     try {
@@ -46,12 +55,18 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  const homeTarget = isService
+    ? "/service-dashboard"
+    : isAdmin
+      ? "/admin"
+      : "/";
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={homeTarget} className="flex items-center gap-2">
             <div className="bg-indigo-600 p-1.5 rounded-lg">
               <Wrench className="h-5 w-5 text-white" />
             </div>
@@ -59,7 +74,8 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-6">
+          {!isService && !isAdmin && (
+            <div className="hidden md:flex items-center gap-6">
             <Link
               to="/services"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -78,7 +94,8 @@ const Navbar = () => {
             >
               Marketplace
             </Link>
-          </div>
+            </div>
+          )}
 
           {/* Right Side */}
           <div className="flex items-center gap-2">
@@ -101,9 +118,11 @@ const Navbar = () => {
                   className="relative"
                 >
                   <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs flex items-center justify-center bg-indigo-600">
-                    3
-                  </Badge>
+                  {unreadCount > 0 && (
+                    <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs flex items-center justify-center bg-indigo-600">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Badge>
+                  )}
                 </Button>
 
                 {/* Cart — only for users */}
@@ -205,7 +224,7 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {menuOpen && (
+        {menuOpen && !isService && !isAdmin && (
           <div className="md:hidden py-4 border-t space-y-2">
             <Link
               to="/services"

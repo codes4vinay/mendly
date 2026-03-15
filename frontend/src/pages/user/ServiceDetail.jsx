@@ -14,10 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import Layout from "@/components/shared/Layout";
 import api from "@/utils/axios";
 import { formatPrice, formatDate } from "@/utils/helpers";
+import { openRazorpayCheckout } from "@/utils/razorpay";
+import { uploadImages } from "@/utils/uploads";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
 import Skeleton from "react-loading-skeleton";
@@ -28,13 +31,27 @@ import "react-datepicker/dist/react-datepicker.css";
 const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated, isUser } = useAuth();
+  const { isAuthenticated, isUser, user } = useAuth();
 
   const [service, setService] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
   const [date, setDate] = useState(null);
+  const [pickupAddress, setPickupAddress] = useState({
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
+  const [pickupContact, setPickupContact] = useState("");
+  const [deviceDetails, setDeviceDetails] = useState({
+    brand: "",
+    model: "",
+    issue: "",
+  });
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
+  const [devicePhotos, setDevicePhotos] = useState([]);
 
   useEffect(() => {
     fetchService();
@@ -76,19 +93,63 @@ const ServiceDetail = () => {
       toast.error("Please select a date");
       return;
     }
+    if (!pickupContact) {
+      toast.error("Please provide contact number");
+      return;
+    }
+    if (!pickupAddress.city || !pickupAddress.pincode) {
+      toast.error("Please provide city and pincode");
+      return;
+    }
+    if (!deviceDetails.issue) {
+      toast.error("Please describe the device issue");
+      return;
+    }
 
     setBooking(true);
     try {
-      await api.post("/bookings", {
+      const uploadedDevicePhotos = await uploadImages(
+        devicePhotos,
+        "mendly/device-photos",
+      );
+      const res = await api.post("/bookings", {
         service: service._id,
         serviceCentre: service.serviceCentre._id,
         scheduledAt: date.toISOString(),
         totalAmount: service.price,
+        pickupAddress,
+        pickupContact,
+        deviceDetails,
+        devicePhotos: uploadedDevicePhotos,
+        paymentMethod,
       });
-      toast.success("Booking created successfully!");
+
+      const data = res.data.data;
+      if (data.paymentRequired) {
+        const paymentPayload = await openRazorpayCheckout({
+          checkout: data.checkout,
+          prefill: {
+            name: user?.name,
+            email: user?.email,
+            contact: pickupContact || user?.phone,
+          },
+          notes: {
+            entityType: "booking",
+            entityId: data.booking._id,
+          },
+        });
+
+        await api.post(`/bookings/${data.booking._id}/verify-payment`, paymentPayload);
+      }
+
+      toast.success(
+        paymentMethod === "cash"
+          ? "Booking created successfully!"
+          : "Payment successful and booking created!",
+      );
       navigate("/my-bookings");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Booking failed");
+      toast.error(error.response?.data?.message || error.message || "Booking failed");
     } finally {
       setBooking(false);
     }
@@ -299,6 +360,7 @@ const ServiceDetail = () => {
                 </div>
                 <Separator />
 
+                {/* Schedule */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium flex items-center gap-2">
                     <Calendar className="h-4 w-4" /> Select Date & Time
@@ -315,6 +377,143 @@ const ServiceDetail = () => {
                   />
                 </div>
 
+                <Separator />
+
+                {/* Pickup Contact */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Contact Number</label>
+                  <input
+                    type="tel"
+                    className="w-full border rounded-md px-3 py-2 text-sm"
+                    placeholder="Your phone number"
+                    value={pickupContact}
+                    onChange={(e) => setPickupContact(e.target.value)}
+                  />
+                </div>
+
+                {/* Pickup Address */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Pickup Address</label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-md px-3 py-2 text-sm mb-1"
+                    placeholder="Street"
+                    value={pickupAddress.street}
+                    onChange={(e) =>
+                      setPickupAddress((prev) => ({
+                        ...prev,
+                        street: e.target.value,
+                      }))
+                    }
+                  />
+                  <div className="grid grid-cols-2 gap-1">
+                    <input
+                      type="text"
+                      className="border rounded-md px-3 py-2 text-sm"
+                      placeholder="City"
+                      value={pickupAddress.city}
+                      onChange={(e) =>
+                        setPickupAddress((prev) => ({
+                          ...prev,
+                          city: e.target.value,
+                        }))
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="border rounded-md px-3 py-2 text-sm"
+                      placeholder="Pincode"
+                      value={pickupAddress.pincode}
+                      onChange={(e) =>
+                        setPickupAddress((prev) => ({
+                          ...prev,
+                          pincode: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Device Details */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Device Details</label>
+                  <input
+                    type="text"
+                    className="w-full border rounded-md px-3 py-2 text-sm mb-1"
+                    placeholder="Brand (e.g., Samsung)"
+                    value={deviceDetails.brand}
+                    onChange={(e) =>
+                      setDeviceDetails((prev) => ({
+                        ...prev,
+                        brand: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full border rounded-md px-3 py-2 text-sm mb-1"
+                    placeholder="Model (e.g., Galaxy S21)"
+                    value={deviceDetails.model}
+                    onChange={(e) =>
+                      setDeviceDetails((prev) => ({
+                        ...prev,
+                        model: e.target.value,
+                      }))
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full border rounded-md px-3 py-2 text-sm"
+                    placeholder="Issue description"
+                    value={deviceDetails.issue}
+                    onChange={(e) =>
+                      setDeviceDetails((prev) => ({
+                        ...prev,
+                        issue: e.target.value,
+                      }))
+                    }
+                  />
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) =>
+                      setDevicePhotos(Array.from(e.target.files || []))
+                    }
+                  />
+                  {devicePhotos.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2">
+                      {devicePhotos.map((photo) => (
+                        <img
+                          key={`${photo.name}-${photo.lastModified}`}
+                          src={URL.createObjectURL(photo)}
+                          alt="Device"
+                          className="h-20 w-full rounded-md object-cover border"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Payment Method</label>
+                  <select
+                    className="w-full border rounded-md px-3 py-2 text-sm bg-background"
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    disabled={booking}
+                  >
+                    <option value="razorpay">Pay Online (Razorpay Test)</option>
+                    <option value="cash">Pay at Service Centre</option>
+                  </select>
+                </div>
+
+                <Separator />
+
                 <Button
                   onClick={handleBooking}
                   disabled={booking}
@@ -323,10 +522,10 @@ const ServiceDetail = () => {
                   {booking ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Booking...
+                      {paymentMethod === "cash" ? "Booking..." : "Processing..."}
                     </>
                   ) : (
-                    "Book Now"
+                    paymentMethod === "cash" ? "Book Now" : "Pay & Book"
                   )}
                 </Button>
 

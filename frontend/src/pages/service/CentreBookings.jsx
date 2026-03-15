@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CalendarCheck, Loader2 } from "lucide-react";
+import { CalendarCheck, Loader2, MapPin, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +13,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import DashboardLayout from "@/components/shared/DashboardLayout";
+import { getOrCreateChat } from "@/features/chat/chatSlice";
 import api from "@/utils/axios";
 import { formatPrice, formatDateTime, getStatusColor } from "@/utils/helpers";
 import { toast } from "sonner";
@@ -19,6 +29,8 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const CentreBookings = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [centreId, setCentreId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +38,9 @@ const CentreBookings = () => {
   const [updating, setUpdating] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [updateDialog, setUpdateDialog] = useState(null);
+  const [trackingMessage, setTrackingMessage] = useState("");
+  const [chatOpeningFor, setChatOpeningFor] = useState(null);
 
   useEffect(() => {
     fetchCentreAndBookings();
@@ -74,6 +89,24 @@ const CentreBookings = () => {
     }
   };
 
+  const updateTracking = async (bookingId, trackStatus) => {
+    setUpdating(bookingId);
+    try {
+      await api.put(`/bookings/${bookingId}/status`, {
+        trackingStatus: trackStatus,
+        trackingMessage: trackingMessage || trackStatus.replace(/_/g, " "),
+      });
+      toast.success("Tracking updated");
+      setUpdateDialog(null);
+      setTrackingMessage("");
+      fetchBookings();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update");
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   const getNextActions = (status) => {
     const actions = {
       pending: [
@@ -89,6 +122,28 @@ const CentreBookings = () => {
       ],
     };
     return actions[status] || [];
+  };
+
+  const handleMessageCustomer = async (booking) => {
+    if (!booking?.serviceCentre) {
+      toast.error("Service centre not found for this booking");
+      return;
+    }
+
+    try {
+      setChatOpeningFor(booking._id);
+      const serviceCentreId =
+        typeof booking.serviceCentre === "string"
+          ? booking.serviceCentre
+          : booking.serviceCentre._id;
+
+      const chat = await dispatch(getOrCreateChat(serviceCentreId)).unwrap();
+      navigate(`/chat/${chat._id}`);
+    } catch (error) {
+      toast.error(error || "Failed to open chat");
+    } finally {
+      setChatOpeningFor(null);
+    }
   };
 
   return (
@@ -143,10 +198,10 @@ const CentreBookings = () => {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card>
-                    <CardContent className="p-5">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-2 flex-wrap">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap mb-2">
                             <h3 className="font-semibold">
                               {booking.service?.name}
                             </h3>
@@ -154,7 +209,7 @@ const CentreBookings = () => {
                               {booking.status?.replace(/_/g, " ")}
                             </Badge>
                           </div>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-muted-foreground">
                             Customer:{" "}
                             <span className="font-medium text-foreground">
                               {booking.customer?.name}
@@ -165,10 +220,48 @@ const CentreBookings = () => {
                           <p className="text-sm text-muted-foreground">
                             Scheduled: {formatDateTime(booking.scheduledAt)}
                           </p>
-                          {booking.notes && (
-                            <p className="text-sm text-muted-foreground">
-                              Note: {booking.notes}
-                            </p>
+
+                          {/* Device Details */}
+                          {booking.deviceDetails?.issue && (
+                            <div className="text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded mt-2 mb-2">
+                              <p className="text-muted-foreground">
+                                Device: {booking.deviceDetails.brand}{" "}
+                                {booking.deviceDetails.model}
+                              </p>
+                              <p className="text-muted-foreground">
+                                Issue: {booking.deviceDetails.issue}
+                              </p>
+                              {booking.devicePhotos?.length > 0 && (
+                                <div className="grid grid-cols-3 gap-2 mt-2">
+                                  {booking.devicePhotos.map((photo) => (
+                                    <img
+                                      key={photo}
+                                      src={photo}
+                                      alt="Device"
+                                      className="h-20 w-full rounded-md object-cover border"
+                                    />
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Pickup Address */}
+                          {booking.pickupAddress?.city && (
+                            <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                              <MapPin className="h-3 w-3 mt-0.5 shrink-0" />
+                              <div>
+                                <p>
+                                  {booking.pickupAddress.street &&
+                                    `${booking.pickupAddress.street}, `}
+                                  {booking.pickupAddress.city}{" "}
+                                  {booking.pickupAddress.pincode}
+                                </p>
+                                {booking.pickupContact && (
+                                  <p>Contact: {booking.pickupContact}</p>
+                                )}
+                              </div>
+                            </div>
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2">
@@ -176,6 +269,19 @@ const CentreBookings = () => {
                             {formatPrice(booking.totalAmount)}
                           </span>
                           <div className="flex gap-2 flex-wrap justify-end">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={chatOpeningFor === booking._id}
+                              onClick={() => handleMessageCustomer(booking)}
+                            >
+                              {chatOpeningFor === booking._id ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <MessageCircle className="h-3.5 w-3.5" />
+                              )}
+                              Message Customer
+                            </Button>
                             {getNextActions(booking.status).map((action) => (
                               <Button
                                 key={action.status}
@@ -193,9 +299,48 @@ const CentreBookings = () => {
                                 )}
                               </Button>
                             ))}
+                            {booking.status !== "cancelled" && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setUpdateDialog(booking._id)}
+                              >
+                                Update Tracking
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
+
+                      {/* Tracking Timeline */}
+                      {booking.tracking?.timeline &&
+                        booking.tracking.timeline.length > 0 && (
+                          <div className="border-t pt-2">
+                            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase">
+                              Tracking
+                            </p>
+                            <div className="space-y-1">
+                              {booking.tracking.timeline
+                                .slice(-3)
+                                .map((entry, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-start gap-2 text-xs"
+                                  >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 mt-1 shrink-0" />
+                                    <div>
+                                      <p className="font-medium">
+                                        {entry.status?.replace(/_/g, " ")}
+                                      </p>
+                                      <p className="text-muted-foreground text-xs">
+                                        {entry.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -232,6 +377,46 @@ const CentreBookings = () => {
               Bookings will appear here when customers book your services
             </p>
           </div>
+        )}
+
+        {/* Update Tracking Dialog */}
+        {updateDialog && (
+          <Dialog
+            open={!!updateDialog}
+            onOpenChange={() => setUpdateDialog(null)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Update Tracking Status</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <Select
+                  disabled={updating}
+                  onValueChange={(value) => {
+                    updateTracking(updateDialog, value);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select tracking status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pickup_scheduled">
+                      Pickup Scheduled
+                    </SelectItem>
+                    <SelectItem value="device_picked_up">
+                      Device Picked Up
+                    </SelectItem>
+                    <SelectItem value="under_repair">Under Repair</SelectItem>
+                    <SelectItem value="repair_done">Repair Done</SelectItem>
+                    <SelectItem value="out_for_delivery">
+                      Out for Delivery
+                    </SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </DashboardLayout>

@@ -8,12 +8,12 @@ import { createServiceCentreSchema, updateServiceCentreSchema } from "../validat
 const router = express.Router();
 
 // public
+router.get("/my/centre", protect, requireEmailVerified, authorize("service"), serviceCentreController.getMyServiceCentre);
 router.get("/", serviceCentreController.getAllServiceCentres);
 router.get("/:id", serviceCentreController.getServiceCentre);
 
 // protected — service role + verified email
 router.post("/", protect, requireEmailVerified, authorize("service"), validate(createServiceCentreSchema), serviceCentreController.createServiceCentre);
-router.get("/my/centre", protect, requireEmailVerified, authorize("service"), serviceCentreController.getMyServiceCentre);
 router.put("/my/centre", protect, requireEmailVerified, authorize("service"), validate(updateServiceCentreSchema), serviceCentreController.updateServiceCentre);
 router.delete("/my/centre", protect, requireEmailVerified, authorize("service"), serviceCentreController.deleteServiceCentre);
 

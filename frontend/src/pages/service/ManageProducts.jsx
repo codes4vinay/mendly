@@ -26,6 +26,7 @@ import {
 import DashboardLayout from "@/components/shared/DashboardLayout";
 import api from "@/utils/axios";
 import { formatPrice } from "@/utils/helpers";
+import { uploadImages } from "@/utils/uploads";
 import { toast } from "sonner";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -60,6 +61,8 @@ const ManageProducts = () => {
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [existingPhotos, setExistingPhotos] = useState([]);
+  const [newPhotos, setNewPhotos] = useState([]);
 
   const {
     register,
@@ -91,26 +94,38 @@ const ManageProducts = () => {
   const openAdd = () => {
     setEditing(null);
     reset({ category: "mobile", condition: "new", stock: 1 });
+    setExistingPhotos([]);
+    setNewPhotos([]);
     setOpen(true);
   };
 
   const openEdit = (product) => {
     setEditing(product);
     reset(product);
+    setExistingPhotos(product.photos || []);
+    setNewPhotos([]);
     setOpen(true);
   };
 
   const onSubmit = async (data) => {
     setSaving(true);
     try {
+      const uploadedPhotos = await uploadImages(newPhotos, "mendly/products");
+      const payload = {
+        ...data,
+        photos: [...existingPhotos, ...uploadedPhotos],
+      };
+
       if (editing) {
-        await api.put(`/products/${editing._id}`, data);
+        await api.put(`/products/${editing._id}`, payload);
         toast.success("Product updated!");
       } else {
-        await api.post("/products", data);
+        await api.post("/products", payload);
         toast.success("Product created!");
       }
       setOpen(false);
+      setExistingPhotos([]);
+      setNewPhotos([]);
       fetchProducts();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to save");
@@ -128,6 +143,10 @@ const ManageProducts = () => {
     } catch (error) {
       toast.error("Failed to delete");
     }
+  };
+
+  const removeNewPhoto = (targetPhoto) => {
+    setNewPhotos((prev) => prev.filter((photo) => photo !== targetPhoto));
   };
 
   return (
@@ -166,9 +185,20 @@ const ManageProducts = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-              >
-                <Card className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
+                >
+                  <Card className="hover:shadow-md transition-shadow overflow-hidden">
+                    <div className="h-40 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                      {product.photos?.[0] ? (
+                        <img
+                          src={product.photos[0]}
+                          alt={product.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Package className="h-10 w-10 text-muted-foreground opacity-40" />
+                      )}
+                    </div>
+                    <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary" className="text-xs">
                         {product.category?.replace(/_/g, " ")}
@@ -323,6 +353,66 @@ const ManageProducts = () => {
                   <p className="text-xs text-red-500">{errors.stock.message}</p>
                 )}
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label>Product Images</Label>
+              <p className="text-xs text-muted-foreground">
+                You can upload multiple product photos. The first one becomes
+                the main image on product cards.
+              </p>
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setNewPhotos(Array.from(e.target.files || []))}
+              />
+              <p className="text-xs text-muted-foreground">
+                Hold `Ctrl` or `Shift` while picking files to select more than
+                one image at once.
+              </p>
+              {(existingPhotos.length > 0 || newPhotos.length > 0) && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {existingPhotos.map((photo) => (
+                    <div key={photo} className="relative">
+                      <img
+                        src={photo}
+                        alt="Product"
+                        className="h-24 w-full rounded-lg object-cover border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExistingPhotos((prev) =>
+                            prev.filter((item) => item !== photo),
+                          )
+                        }
+                        className="absolute top-1 right-1 rounded-full bg-black/70 px-2 py-1 text-xs text-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  {newPhotos.map((photo) => (
+                    <div
+                      key={`${photo.name}-${photo.lastModified}`}
+                      className="relative"
+                    >
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt="New product"
+                        className="h-24 w-full rounded-lg object-cover border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewPhoto(photo)}
+                        className="absolute top-1 right-1 rounded-full bg-black/70 px-2 py-1 text-xs text-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex gap-2 pt-2">
               <Button

@@ -120,8 +120,16 @@ const ServiceCentres = () => {
                     className="cursor-pointer hover:shadow-lg transition-all h-full"
                     onClick={() => navigate(`/service-centres/${centre._id}`)}
                   >
-                    <div className="h-36 bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-950 dark:to-blue-950 rounded-t-lg flex items-center justify-center">
-                      <Wrench className="h-12 w-12 text-indigo-300" />
+                    <div className="h-36 bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-950 dark:to-blue-950 rounded-t-lg flex items-center justify-center overflow-hidden">
+                      {centre.photos?.[0] ? (
+                        <img
+                          src={centre.photos[0]}
+                          alt={centre.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Wrench className="h-12 w-12 text-indigo-300" />
+                      )}
                     </div>
                     <CardContent className="p-4 space-y-2">
                       <h3 className="font-semibold line-clamp-1">

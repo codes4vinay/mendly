@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/shared/DashboardLayout";
 import api from "@/utils/axios";
 import { formatPrice, formatDateTime, getStatusColor } from "@/utils/helpers";
+import { toast } from "sonner";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -23,6 +24,7 @@ const AdminOrders = () => {
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [updating, setUpdating] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -42,6 +44,19 @@ const AdminOrders = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (id, nextStatus) => {
+    setUpdating(id);
+    try {
+      const res = await api.put(`/orders/${id}/status`, { status: nextStatus });
+      toast.success(res.data.message || "Order updated");
+      fetchOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update order");
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -121,9 +136,35 @@ const AdminOrders = () => {
                             {formatDateTime(order.createdAt)}
                           </p>
                         </div>
-                        <span className="font-bold text-green-600 shrink-0">
-                          {formatPrice(order.totalAmount)}
-                        </span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-bold text-green-600">
+                            {formatPrice(order.totalAmount)}
+                          </span>
+                          <Select
+                            value={order.status}
+                            onValueChange={(value) =>
+                              updateOrderStatus(order._id, value)
+                            }
+                            disabled={updating === order._id}
+                          >
+                            <SelectTrigger className="w-40">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="confirmed">
+                                Confirmed
+                              </SelectItem>
+                              <SelectItem value="shipped">Shipped</SelectItem>
+                              <SelectItem value="delivered">
+                                Delivered
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                Cancelled
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

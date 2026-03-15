@@ -159,14 +159,14 @@ const MyBookings = () => {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-5">
+                    <CardContent className="p-5 space-y-4">
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="flex items-start gap-4">
                           <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-950 flex items-center justify-center shrink-0">
                             <Wrench className="h-6 w-6 text-indigo-600" />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap mb-2">
                               <h3 className="font-semibold">
                                 {booking.service?.name}
                               </h3>
@@ -174,6 +174,18 @@ const MyBookings = () => {
                                 {booking.status?.replace(/_/g, " ")}
                               </Badge>
                             </div>
+
+                            {/* Device Details */}
+                            {booking.deviceDetails?.issue && (
+                              <div className="text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded mb-2">
+                                <p className="text-muted-foreground">
+                                  Device: {booking.deviceDetails.brand}{" "}
+                                  {booking.deviceDetails.model} —{" "}
+                                  {booking.deviceDetails.issue}
+                                </p>
+                              </div>
+                            )}
+
                             <div className="flex flex-wrap gap-3 mt-2">
                               {booking.serviceCentre && (
                                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -187,21 +199,7 @@ const MyBookings = () => {
                                   {formatDateTime(booking.scheduledAt)}
                                 </span>
                               </div>
-                              {booking.completedAt && (
-                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                  <Clock className="h-3 w-3" />
-                                  <span>
-                                    Completed:{" "}
-                                    {formatDateTime(booking.completedAt)}
-                                  </span>
-                                </div>
-                              )}
                             </div>
-                            {booking.notes && (
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Note: {booking.notes}
-                              </p>
-                            )}
                             {booking.cancellationReason && (
                               <p className="text-sm text-red-500 mt-1">
                                 Reason: {booking.cancellationReason}
@@ -227,7 +225,8 @@ const MyBookings = () => {
                             </Button>
                             {["pending", "confirmed"].includes(
                               booking.status,
-                            ) && (
+                            ) &&
+                              booking.payment?.status !== "paid" && (
                               <Button
                                 size="sm"
                                 variant="destructive"
@@ -235,7 +234,7 @@ const MyBookings = () => {
                               >
                                 Cancel
                               </Button>
-                            )}
+                              )}
                             {booking.status === "completed" &&
                               !reviewedIds.includes(booking._id) && (
                                 <Button
@@ -258,6 +257,39 @@ const MyBookings = () => {
                           </div>
                         </div>
                       </div>
+
+                      {/* Timeline */}
+                      {booking.tracking?.timeline &&
+                        booking.tracking.timeline.length > 0 && (
+                          <div className="border-t pt-3">
+                            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase">
+                              Tracking
+                            </p>
+                            <div className="space-y-2">
+                              {booking.tracking.timeline.map((entry, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-start gap-2 text-xs"
+                                >
+                                  <div className="w-2 h-2 rounded-full bg-indigo-600 mt-1.5 shrink-0" />
+                                  <div>
+                                    <p className="font-medium">
+                                      {entry.status?.replace(/_/g, " ")}
+                                    </p>
+                                    <p className="text-muted-foreground">
+                                      {entry.message}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {new Date(
+                                        entry.timestamp,
+                                      ).toLocaleDateString()}
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 </motion.div>

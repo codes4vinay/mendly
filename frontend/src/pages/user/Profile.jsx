@@ -16,6 +16,7 @@ import api from "@/utils/axios";
 import { updateUser } from "@/features/auth/authSlice";
 import useAuth from "@/hooks/useAuth";
 import { toast } from "sonner";
+import DashboardLayout from "@/components/shared/DashboardLayout";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Name too short"),
@@ -40,7 +41,7 @@ const passwordSchema = z
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { user } = useAuth();
+  const { user, isService, isAdmin } = useAuth();
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
 
@@ -91,14 +92,18 @@ const Profile = () => {
     }
   };
 
+  const Wrapper = isService || isAdmin ? DashboardLayout : Layout;
+  const pageTitle = isService ? "Service Profile" : "Profile";
+  const pageDescription = isService
+    ? "Manage your service-owner account settings"
+    : "Manage your account settings";
+
   return (
-    <Layout>
+    <Wrapper>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your account settings
-          </p>
+          <h1 className="text-3xl font-bold">{pageTitle}</h1>
+          <p className="text-muted-foreground mt-1">{pageDescription}</p>
         </div>
 
         {/* Avatar + Info */}
@@ -258,7 +263,7 @@ const Profile = () => {
           </Card>
         </div>
       </div>
-    </Layout>
+    </Wrapper>
   );
 };
 

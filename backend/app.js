@@ -16,7 +16,9 @@ import productRoutes from "./routes/product.js";
 import orderRoutes from "./routes/order.js";
 import reviewRoutes from "./routes/review.js";
 import notificationRoutes from "./routes/notification.js";
+import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
+import uploadRoutes from "./routes/upload.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +51,9 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/chats", chatRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────
 app.get("/", (req, res) => res.json({ message: "Mendly API running ✅" }));

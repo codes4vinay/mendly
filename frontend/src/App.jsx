@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute, RoleRoute } from "./routes/ProtectedRoute";
 import GuestRoute from "./routes/GuestRoute";
 import useTheme from "./hooks/useTheme";
+import { useNotifications } from "./hooks/useNotifications";
 
 // auth pages
 import Login from "./pages/auth/Login";
@@ -22,8 +23,13 @@ import MyBookings from "./pages/user/MyBookings";
 import MyOrders from "./pages/user/MyOrders";
 import Profile from "./pages/user/Profile";
 import Notifications from "./pages/user/Notifications";
+import ChatsList from "./pages/user/ChatsList";
+import ChatWindow from "./pages/user/ChatWindow";
 import ServiceCentres from "./pages/user/ServiceCentres";
 import ServiceCentreDetail from "./pages/user/ServiceCentreDetail";
+import AboutUs from "./pages/AboutUs";
+import Contact from "./pages/Contact";
+import TrustPage from "./pages/TrustPage";
 
 // service pages
 import ServiceDashboard from "./pages/service/Dashboard";
@@ -38,6 +44,8 @@ import CentreReviews from "./pages/service/CentreReviews";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminUsers from "./pages/admin/Users";
 import AdminServiceCentres from "./pages/admin/ServiceCentres";
+import AdminServices from "./pages/admin/Services";
+import AdminProducts from "./pages/admin/Products";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminOrders from "./pages/admin/Orders";
 import AdminReviews from "./pages/admin/Reviews";
@@ -47,6 +55,7 @@ import NotFound from "./pages/NotFound";
 
 const App = () => {
   useTheme();
+  useNotifications();
 
   return (
     <Routes>
@@ -58,6 +67,9 @@ const App = () => {
       <Route path="/service-centres/:id" element={<ServiceCentreDetail />} />
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/marketplace/:id" element={<ProductDetail />} />
+      <Route path="/about" element={<AboutUs />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy-policy" element={<TrustPage />} />
 
       {/* verify otp — stays public */}
       <Route path="/verify-otp" element={<VerifyOtp />} />
@@ -72,12 +84,15 @@ const App = () => {
 
       {/* user protected routes */}
       <Route element={<ProtectedRoute />}>
+        <Route path="/chats" element={<ChatsList />} />
+        <Route path="/chat/:chatId" element={<ChatWindow />} />
+        <Route path="/profile" element={<Profile />} />
+
         <Route element={<RoleRoute allowedRoles={["user"]} />}>
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/my-orders" element={<MyOrders />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/notifications" element={<Notifications />} />
         </Route>
       </Route>
@@ -116,6 +131,8 @@ const App = () => {
             path="/admin/service-centres"
             element={<AdminServiceCentres />}
           />
+          <Route path="/admin/services" element={<AdminServices />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/bookings" element={<AdminBookings />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Wrench,
@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Layout from "@/components/shared/Layout";
 import api from "@/utils/axios";
 import { formatPrice } from "@/utils/helpers";
+import useAuth from "@/hooks/useAuth";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -112,14 +113,24 @@ const ServiceCard = ({ service }) => {
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
+  const productPhoto = product.photos?.find(Boolean);
+
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
       <Card
         className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
         onClick={() => navigate(`/marketplace/${product._id}`)}
       >
-        <div className="h-40 bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-950 dark:to-teal-950 flex items-center justify-center">
-          <Smartphone className="h-12 w-12 text-green-400" />
+        <div className="h-40 bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-950 dark:to-teal-950 flex items-center justify-center overflow-hidden">
+          {productPhoto ? (
+            <img
+              src={productPhoto}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Smartphone className="h-12 w-12 text-green-400" />
+          )}
         </div>
         <CardContent className="p-4">
           <Badge variant="secondary" className="text-xs mb-2">
@@ -146,12 +157,17 @@ const ProductCard = ({ product }) => {
 // ─── Main Component ────────────────────────────────────────────
 const Home = () => {
   const navigate = useNavigate();
+  const { isService, isAdmin } = useAuth();
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [loadingSvc, setLoadingSvc] = useState(true);
   const [loadingPrd, setLoadingPrd] = useState(true);
 
   useEffect(() => {
+    if (isService) {
+      return;
+    }
+
     const fetchServices = async () => {
       try {
         const res = await api.get("/services?limit=4");
@@ -176,7 +192,11 @@ const Home = () => {
 
     fetchServices();
     fetchProducts();
-  }, []);
+  }, [isService]);
+
+  if (isService) {
+    return <Navigate to="/service-dashboard" replace />;
+  }
 
   return (
     <Layout>

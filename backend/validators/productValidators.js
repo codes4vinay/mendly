@@ -13,6 +13,7 @@ export const createProductSchema = z.object({
     condition: z.enum(["new", "like_new", "good", "fair"], { message: "Invalid condition" }),
     price: z.number({ required_error: "Price is required" }).min(0),
     stock: z.number().min(0).default(1),
+    photos: z.array(z.string().url()).optional(),
 });
 
 export const updateProductSchema = createProductSchema.partial();

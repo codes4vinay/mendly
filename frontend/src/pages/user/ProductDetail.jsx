@@ -5,7 +5,6 @@ import {
   Package,
   Star,
   MapPin,
-  Clock,
   Phone,
   ArrowLeft,
   ShoppingCart,
@@ -35,11 +34,16 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [ordering, setOrdering] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [selectedPhoto, setSelectedPhoto] = useState(0);
 
   useEffect(() => {
     fetchProduct();
     fetchReviews();
   }, [id]);
+
+  useEffect(() => {
+    setSelectedPhoto(0);
+  }, [product?._id]);
 
   const fetchProduct = async () => {
     try {
@@ -74,21 +78,48 @@ const ProductDetail = () => {
     }
 
     setOrdering(true);
-    try {
-      await api.post("/orders", {
-        serviceCentre: product.serviceCentre._id,
-        items: [{ product: product._id, quantity, price: product.price }],
-        totalAmount: product.price * quantity,
-        payment: { method: "cash" },
-        deliveryAddress: { city: "Delhi" },
-      });
-      toast.success("Order placed successfully!");
-      navigate("/my-orders");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Order failed");
-    } finally {
-      setOrdering(false);
+    navigate("/checkout", {
+      state: {
+        buyNowItems: [
+          {
+            productId: product._id,
+            name: product.name,
+            price: product.price,
+            quantity,
+            serviceCentreId: product.serviceCentre?._id,
+            serviceCentreName: product.serviceCentre?.name,
+          },
+        ],
+      },
+    });
+    setOrdering(false);
+  };
+
+  const handleAddToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("mendly_cart") || "[]");
+    const existingIndex = cart.findIndex(
+      (item) => item.productId === product._id,
+    );
+    let nextCart;
+    if (existingIndex >= 0) {
+      nextCart = [...cart];
+      nextCart[existingIndex].quantity += quantity;
+    } else {
+      nextCart = [
+        ...cart,
+        {
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          quantity,
+          serviceCentreId: product.serviceCentre?._id,
+          serviceCentreName: product.serviceCentre?.name,
+        },
+      ];
     }
+    localStorage.setItem("mendly_cart", JSON.stringify(nextCart));
+    toast.success("Added to cart");
+    navigate("/cart");
   };
 
   if (loading) {
@@ -104,6 +135,9 @@ const ProductDetail = () => {
 
   if (!product) return null;
 
+  const photos = product.photos?.filter(Boolean) || [];
+  const activePhoto = photos[selectedPhoto] || photos[0] || null;
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -118,13 +152,59 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Left: Product Info ─────────────────────── */}
           <div className="lg:col-span-2 space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="h-64 bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-950 dark:to-teal-950 rounded-2xl flex items-center justify-center"
-            >
-              <Package className="h-20 w-20 text-green-300" />
-            </motion.div>
+            <div className="space-y-3">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative flex min-h-[300px] items-center justify-center overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/60 sm:min-h-[360px] lg:min-h-[420px]"
+              >
+                {activePhoto ? (
+                  <>
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_45%)] dark:bg-[radial-gradient(circle_at_top,_rgba(52,211,153,0.16),_transparent_45%)]" />
+                    <img
+                      src={activePhoto}
+                      alt={product.name}
+                      className="relative z-10 max-h-[390px] w-full object-contain p-4 sm:max-h-[440px] sm:p-6"
+                    />
+                    {photos.length > 1 && (
+                      <div className="absolute bottom-4 right-4 rounded-full bg-black/65 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                        {selectedPhoto + 1} / {photos.length}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950">
+                      <Package className="h-10 w-10 text-emerald-500" />
+                    </div>
+                    <p className="text-sm">Product image will appear here</p>
+                  </div>
+                )}
+              </motion.div>
+
+              {photos.length > 1 && (
+                <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
+                  {photos.map((photo, index) => (
+                    <button
+                      key={`${photo}-${index}`}
+                      type="button"
+                      onClick={() => setSelectedPhoto(index)}
+                      className={`overflow-hidden rounded-2xl border bg-slate-50 transition-all dark:bg-slate-950 ${
+                        selectedPhoto === index
+                          ? "border-emerald-500 ring-2 ring-emerald-500/20"
+                          : "border-border/60 hover:border-emerald-300"
+                      }`}
+                    >
+                      <img
+                        src={photo}
+                        alt={`${product.name} view ${index + 1}`}
+                        className="h-20 w-full object-cover sm:h-24"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div>
               <div className="flex items-start justify-between gap-4">
@@ -341,23 +421,33 @@ const ProductDetail = () => {
                   </span>
                 </div>
 
-                <Button
-                  onClick={handleOrder}
-                  disabled={ordering || product.stock === 0}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
-                >
-                  {ordering ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Placing order...
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Order Now
-                    </>
-                  )}
-                </Button>
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={product.stock === 0}
+                    className="w-full bg-slate-600 hover:bg-slate-700 text-white"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                  <Button
+                    onClick={handleOrder}
+                    disabled={ordering || product.stock === 0}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    {ordering ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Placing order...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Order Now
+                      </>
+                    )}
+                  </Button>
+                </div>
 
                 {!isAuthenticated && (
                   <p className="text-xs text-center text-muted-foreground">

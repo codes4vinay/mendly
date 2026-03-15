@@ -6,6 +6,8 @@ import Product from "../models/Product.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import apiResponse from "../utils/apiResponse.js";
+import { createNotification } from "../utils/createNotification.js";
+import { getIO } from "../utils/ioInstance.js";
 
 // ─── Create Review ────────────────────────────────────────────
 export const createReview = asyncHandler(async (req, res) => {
@@ -42,6 +44,34 @@ export const createReview = asyncHandler(async (req, res) => {
     // update rating on service or product
     if (service) await updateRating(Service, service);
     if (product) await updateRating(Product, product);
+
+    // Create notification for service centre owner
+    if (service) {
+        const svc = await Service.findById(service).populate("serviceCentre", "owner");
+        if (svc && svc.serviceCentre && svc.serviceCentre.owner) {
+            await createNotification({
+                userId: svc.serviceCentre.owner._id,
+                type: "new_review",
+                title: "New Service Review",
+                message: `You have received a new ${rating}-star review for your service "${svc.name}". Comment: "${comment.substring(0, 50)}..."`,
+                io: getIO(),
+            });
+        }
+    }
+
+    // Create notification for product seller
+    if (product) {
+        const prod = await Product.findById(product).populate("seller", "_id");
+        if (prod && prod.seller) {
+            await createNotification({
+                userId: prod.seller._id,
+                type: "new_review",
+                title: "New Product Review",
+                message: `You have received a new ${rating}-star review for your product "${prod.name}". Comment: "${comment.substring(0, 50)}..."`,
+                io: getIO(),
+            });
+        }
+    }
 
     return apiResponse(res, 201, "Review created successfully", { review });
 });

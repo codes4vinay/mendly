@@ -15,6 +15,9 @@ const requiredEnvVars = [
     "EMAIL_USER",
     "EMAIL_PASS",
     "EMAIL_FROM",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET",
 ];
 
 const validateEnv = () => {

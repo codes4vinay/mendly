@@ -19,10 +19,15 @@ const orderSchema = new mongoose.Schema(
         },
         payment: {
             status: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending" },
-            method: { type: String, enum: ["cash", "upi", "card", "netbanking"], default: "cash" },
+            method: { type: String, enum: ["cash", "upi", "card", "netbanking", "razorpay"], default: "cash" },
+            provider: { type: String, default: null },
             transactionId: { type: String, default: null },
+            razorpayOrderId: { type: String, default: null },
+            razorpayPaymentId: { type: String, default: null },
+            razorpaySignature: { type: String, default: null },
             paidAt: { type: Date, default: null },
         },
+        inventoryReserved: { type: Boolean, default: false },
         deliveryAddress: {
             street: { type: String },
             city: { type: String },

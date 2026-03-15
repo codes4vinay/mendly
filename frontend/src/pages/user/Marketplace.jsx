@@ -217,65 +217,77 @@ const Marketplace = () => {
         ) : filteredProducts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  whileHover={{ y: -4 }}
-                >
-                  <Card
-                    className="cursor-pointer hover:shadow-lg transition-all overflow-hidden h-full"
-                    onClick={() => navigate(`/marketplace/${product._id}`)}
+              {filteredProducts.map((product, index) => {
+                const productPhoto = product.photos?.find(Boolean);
+
+                return (
+                  <motion.div
+                    key={product._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ y: -4 }}
                   >
-                    <div className="h-44 bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-950 dark:to-teal-950 flex items-center justify-center">
-                      <Package className="h-14 w-14 text-green-300" />
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="text-xs">
-                          {product.category?.replace(/_/g, " ")}
-                        </Badge>
-                        <Badge
-                          className={`text-xs ${
-                            product.condition === "new"
-                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                              : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                          }`}
-                        >
-                          {product.condition?.replace(/_/g, " ")}
-                        </Badge>
+                    <Card
+                      className="cursor-pointer hover:shadow-lg transition-all overflow-hidden h-full"
+                      onClick={() => navigate(`/marketplace/${product._id}`)}
+                    >
+                      <div className="h-44 bg-gradient-to-br from-green-100 to-teal-100 dark:from-green-950 dark:to-teal-950 flex items-center justify-center overflow-hidden">
+                        {productPhoto ? (
+                          <img
+                            src={productPhoto}
+                            alt={product.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <Package className="h-14 w-14 text-green-300" />
+                        )}
                       </div>
-                      <h3 className="font-semibold line-clamp-1">
-                        {product.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                        {product.description || "Quality electronics product"}
-                      </p>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="font-bold text-green-600 text-lg">
-                          {formatPrice(product.price)}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                            <span className="text-xs">
-                              {product.rating?.average || 0}
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary" className="text-xs">
+                            {product.category?.replace(/_/g, " ")}
+                          </Badge>
+                          <Badge
+                            className={`text-xs ${
+                              product.condition === "new"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                            }`}
+                          >
+                            {product.condition?.replace(/_/g, " ")}
+                          </Badge>
+                        </div>
+                        <h3 className="font-semibold line-clamp-1">
+                          {product.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {product.description || "Quality electronics product"}
+                        </p>
+                        <div className="flex items-center justify-between mt-4">
+                          <span className="font-bold text-green-600 text-lg">
+                            {formatPrice(product.price)}
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs">
+                                {product.rating?.average || 0}
+                              </span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              Stock: {product.stock}
                             </span>
                           </div>
-                          <span className="text-xs text-muted-foreground">
-                            Stock: {product.stock}
-                          </span>
                         </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {product.serviceCentre?.name}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {product.serviceCentre?.name}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </div>
 
             {totalPages > 1 && (

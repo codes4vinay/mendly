@@ -176,7 +176,8 @@ const MyOrders = () => {
                           <div className="flex gap-2">
                             {["pending", "confirmed"].includes(
                               order.status,
-                            ) && (
+                            ) &&
+                              order.payment?.status !== "paid" && (
                               <Button
                                 size="sm"
                                 variant="destructive"
@@ -184,7 +185,7 @@ const MyOrders = () => {
                               >
                                 Cancel
                               </Button>
-                            )}
+                              )}
                           </div>
                         </div>
                       </div>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/shared/DashboardLayout";
 import api from "@/utils/axios";
 import { formatPrice, formatDateTime, getStatusColor } from "@/utils/helpers";
+import { toast } from "sonner";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
@@ -23,6 +24,7 @@ const AdminBookings = () => {
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [updating, setUpdating] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -42,6 +44,19 @@ const AdminBookings = () => {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateBookingStatus = async (id, nextStatus) => {
+    setUpdating(id);
+    try {
+      const res = await api.put(`/bookings/${id}/status`, { status: nextStatus });
+      toast.success(res.data.message || "Booking updated");
+      fetchBookings();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update booking");
+    } finally {
+      setUpdating(null);
     }
   };
 
@@ -116,9 +131,37 @@ const AdminBookings = () => {
                             {formatDateTime(booking.scheduledAt)}
                           </p>
                         </div>
-                        <span className="font-bold text-indigo-600 shrink-0">
-                          {formatPrice(booking.totalAmount)}
-                        </span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="font-bold text-indigo-600">
+                            {formatPrice(booking.totalAmount)}
+                          </span>
+                          <Select
+                            value={booking.status}
+                            onValueChange={(value) =>
+                              updateBookingStatus(booking._id, value)
+                            }
+                            disabled={updating === booking._id}
+                          >
+                            <SelectTrigger className="w-40">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="confirmed">
+                                Confirmed
+                              </SelectItem>
+                              <SelectItem value="in_progress">
+                                In Progress
+                              </SelectItem>
+                              <SelectItem value="completed">
+                                Completed
+                              </SelectItem>
+                              <SelectItem value="cancelled">
+                                Cancelled
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

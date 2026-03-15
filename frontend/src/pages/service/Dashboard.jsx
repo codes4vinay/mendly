@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -10,14 +11,18 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  MessageCircle,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DashboardLayout from "@/components/shared/DashboardLayout";
+import { getOrCreateChat } from "@/features/chat/chatSlice";
 import api from "@/utils/axios";
 import { formatPrice, formatDateTime, getStatusColor } from "@/utils/helpers";
 import Skeleton from "react-loading-skeleton";
+import { toast } from "sonner";
 import "react-loading-skeleton/dist/skeleton.css";
 
 const StatCard = ({ title, value, icon: Icon, color, loading }) => (
@@ -43,6 +48,7 @@ const StatCard = ({ title, value, icon: Icon, color, loading }) => (
 );
 
 const ServiceDashboard = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [centre, setCentre] = useState(null);
   const [bookings, setBookings] = useState([]);
@@ -50,6 +56,7 @@ const ServiceDashboard = () => {
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [chatOpeningFor, setChatOpeningFor] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -92,6 +99,23 @@ const ServiceDashboard = () => {
 
   const pendingBookings = bookings.filter((b) => b.status === "pending").length;
   const pendingOrders = orders.filter((o) => o.status === "pending").length;
+
+  const handleMessageCustomer = async () => {
+    if (!centre?._id) {
+      toast.error("Service centre is not ready yet");
+      return;
+    }
+
+    try {
+      setChatOpeningFor("dashboard");
+      const chat = await dispatch(getOrCreateChat(centre._id)).unwrap();
+      navigate(`/chat/${chat._id}`);
+    } catch (error) {
+      toast.error(error || "Failed to open chat");
+    } finally {
+      setChatOpeningFor(null);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -165,6 +189,12 @@ const ServiceDashboard = () => {
               icon: ShoppingBag,
               color: "bg-purple-600",
             },
+            {
+              label: "Messages",
+              path: "/chats",
+              icon: MessageCircle,
+              color: "bg-emerald-600",
+            },
           ].map((action) => (
             <motion.div
               key={action.path}
@@ -216,6 +246,18 @@ const ServiceDashboard = () => {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleMessageCustomer}
+                          disabled={chatOpeningFor === "dashboard"}
+                        >
+                          {chatOpeningFor === "dashboard" ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <MessageCircle className="h-3.5 w-3.5" />
+                          )}
+                        </Button>
                         <span className="text-sm font-medium">
                           {formatPrice(booking.totalAmount)}
                         </span>

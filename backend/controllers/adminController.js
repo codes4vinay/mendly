@@ -1,5 +1,7 @@
 import User from "../models/User.js";
 import ServiceCentre from "../models/ServiceCentre.js";
+import Service from "../models/Service.js";
+import Product from "../models/Product.js";
 import Booking from "../models/Booking.js";
 import Order from "../models/Order.js";
 import Review from "../models/Review.js";
@@ -164,4 +166,61 @@ export const toggleReviewVisibility = asyncHandler(async (req, res) => {
     await review.save();
 
     return apiResponse(res, 200, `Review ${review.isVisible ? "shown" : "hidden"} successfully`);
+});
+
+export const getAllServices = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    const total = await Service.countDocuments();
+    const services = await Service.find()
+        .populate("serviceCentre", "name")
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
+
+    return apiResponse(res, 200, "Services fetched successfully", {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+        services,
+    });
+});
+
+export const toggleServiceStatus = asyncHandler(async (req, res) => {
+    const service = await Service.findById(req.params.id);
+    if (!service) throw new ApiError(404, "Service not found");
+
+    service.isActive = !service.isActive;
+    await service.save();
+
+    return apiResponse(res, 200, `Service ${service.isActive ? "activated" : "deactivated"} successfully`);
+});
+
+export const getAllProducts = asyncHandler(async (req, res) => {
+    const { page = 1, limit = 10 } = req.query;
+
+    const total = await Product.countDocuments();
+    const products = await Product.find()
+        .populate("serviceCentre", "name")
+        .populate("seller", "name email")
+        .skip((page - 1) * limit)
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
+
+    return apiResponse(res, 200, "Products fetched successfully", {
+        total,
+        page: Number(page),
+        pages: Math.ceil(total / limit),
+        products,
+    });
+});
+
+export const toggleProductStatus = asyncHandler(async (req, res) => {
+    const product = await Product.findById(req.params.id);
+    if (!product) throw new ApiError(404, "Product not found");
+
+    product.isActive = !product.isActive;
+    await product.save();
+
+    return apiResponse(res, 200, `Product ${product.isActive ? "activated" : "deactivated"} successfully`);
 });

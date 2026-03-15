@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import DashboardLayout from "@/components/shared/DashboardLayout";
 import api from "@/utils/axios";
+import { uploadImages } from "@/utils/uploads";
 import { toast } from "sonner";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -36,6 +37,8 @@ const ManageCentre = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hascentre, setHasCentre] = useState(false);
+  const [existingPhotos, setExistingPhotos] = useState([]);
+  const [newPhotos, setNewPhotos] = useState([]);
 
   const {
     register,
@@ -57,6 +60,7 @@ const ManageCentre = () => {
     try {
       const res = await api.get("/service-centres/my/centre");
       reset(res.data.data.serviceCentre);
+      setExistingPhotos(res.data.data.serviceCentre.photos || []);
       setHasCentre(true);
     } catch (error) {
       setHasCentre(false);
@@ -68,19 +72,34 @@ const ManageCentre = () => {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
+      const uploadedPhotos = await uploadImages(
+        newPhotos,
+        "mendly/service-centres",
+      );
+      const payload = {
+        ...data,
+        photos: [...existingPhotos, ...uploadedPhotos],
+      };
+
       if (hascentre) {
-        await api.put("/service-centres/my/centre", data);
+        await api.put("/service-centres/my/centre", payload);
         toast.success("Centre updated successfully!");
       } else {
-        await api.post("/service-centres", data);
+        await api.post("/service-centres", payload);
         toast.success("Centre created successfully!");
         setHasCentre(true);
       }
+      setNewPhotos([]);
+      fetchCentre();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to save");
     } finally {
       setSaving(false);
     }
+  };
+
+  const removeNewPhoto = (targetPhoto) => {
+    setNewPhotos((prev) => prev.filter((photo) => photo !== targetPhoto));
   };
 
   if (loading) {
@@ -161,6 +180,71 @@ const ManageCentre = () => {
                 </Label>
                 <Input {...register("gstin")} placeholder="22AAAAA0000A1Z5" />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Shop Images</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Service owners can upload multiple shop photos here. These
+                images are used on the public centre page to help customers
+                recognize your shop.
+              </p>
+              <Input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setNewPhotos(Array.from(e.target.files || []))}
+              />
+              <p className="text-xs text-muted-foreground">
+                Add storefront, reception, workbench, or inside-shop photos.
+              </p>
+              {(existingPhotos.length > 0 || newPhotos.length > 0) && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {existingPhotos.map((photo) => (
+                    <div key={photo} className="relative">
+                      <img
+                        src={photo}
+                        alt="Centre"
+                        className="h-24 w-full rounded-lg object-cover border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExistingPhotos((prev) =>
+                            prev.filter((item) => item !== photo),
+                          )
+                        }
+                        className="absolute top-1 right-1 rounded-full bg-black/70 px-2 py-1 text-xs text-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  {newPhotos.map((photo) => (
+                    <div
+                      key={`${photo.name}-${photo.lastModified}`}
+                      className="relative"
+                    >
+                      <img
+                        src={URL.createObjectURL(photo)}
+                        alt="New centre"
+                        className="h-24 w-full rounded-lg object-cover border"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewPhoto(photo)}
+                        className="absolute top-1 right-1 rounded-full bg-black/70 px-2 py-1 text-xs text-white"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 

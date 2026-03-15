@@ -15,6 +15,7 @@ export const createServiceCentreSchema = z.object({
         open: z.string().default("09:00"),
         close: z.string().default("18:00"),
     }).optional(),
+    photos: z.array(z.string().url()).optional(),
 });
 
 export const updateServiceCentreSchema = createServiceCentreSchema.partial();

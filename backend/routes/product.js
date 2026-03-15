@@ -8,12 +8,12 @@ import { createProductSchema, updateProductSchema } from "../validators/productV
 const router = express.Router();
 
 // public
+router.get("/my/products", protect, requireEmailVerified, authorize("service"), productController.getMyProducts);
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProduct);
 
 // protected — service role + verified email
 router.post("/", protect, requireEmailVerified, authorize("service"), validate(createProductSchema), productController.createProduct);
-router.get("/my/products", protect, requireEmailVerified, authorize("service"), productController.getMyProducts);
 router.put("/:id", protect, requireEmailVerified, authorize("service"), validate(updateProductSchema), productController.updateProduct);
 router.delete("/:id", protect, requireEmailVerified, authorize("service"), productController.deleteProduct);
 

@@ -10,13 +10,14 @@ import {
   CalendarCheck,
   ShoppingBag,
   Star,
+  MessageCircle,
+  User,
   Menu,
   X,
   LogOut,
   Sun,
   Moon,
   ChevronRight,
-  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,6 +36,8 @@ const serviceNavItems = [
     icon: CalendarCheck,
     path: "/service-dashboard/bookings",
   },
+  { label: "Messages", icon: MessageCircle, path: "/chats" },
+  { label: "Profile", icon: User, path: "/profile" },
   { label: "Orders", icon: ShoppingBag, path: "/service-dashboard/orders" },
   { label: "Reviews", icon: Star, path: "/service-dashboard/reviews" },
 ];
@@ -43,6 +46,8 @@ const adminNavItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/admin" },
   { label: "Users", icon: Settings, path: "/admin/users" },
   { label: "Service Centres", icon: Wrench, path: "/admin/service-centres" },
+  { label: "Services", icon: Wrench, path: "/admin/services" },
+  { label: "Products", icon: Package, path: "/admin/products" },
   { label: "Bookings", icon: CalendarCheck, path: "/admin/bookings" },
   { label: "Orders", icon: ShoppingBag, path: "/admin/orders" },
   { label: "Reviews", icon: Star, path: "/admin/reviews" },
@@ -57,6 +62,7 @@ const DashboardLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = isAdmin ? adminNavItems : serviceNavItems;
+  const homeTarget = isAdmin ? "/admin" : "/service-dashboard";
 
   const handleLogout = async () => {
     try {
@@ -71,7 +77,7 @@ const DashboardLayout = ({ children }) => {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={homeTarget} className="flex items-center gap-2">
           <div className="bg-indigo-600 p-1.5 rounded-lg">
             <Wrench className="h-5 w-5 text-white" />
           </div>
@@ -191,11 +197,8 @@ const DashboardLayout = ({ children }) => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate("/notifications")}
+              onClick={() => navigate(homeTarget)}
             >
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
               <Wrench className="h-4 w-4" />
             </Button>
           </div>
