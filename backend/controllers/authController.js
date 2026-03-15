@@ -8,6 +8,7 @@ import generateTokens from "../utils/generateTokens.js";
 import generateOtp from "../utils/generateOtp.js";
 import sendEmail from "../utils/sendEmail.js";
 import { verifyEmailTemplate, forgotPasswordTemplate } from "../utils/emailTemplates.js";
+import { refreshCookieClearOptions } from "../utils/refreshCookieOptions.js";
 
 // ─── Register ─────────────────────────────────────────────────
 export const register = asyncHandler(async (req, res) => {
@@ -107,11 +108,7 @@ export const logout = asyncHandler(async (req, res) => {
         await RefreshToken.findOneAndUpdate({ token }, { isRevoked: true });
     }
 
-    res.clearCookie("refresh_token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-    });
+    res.clearCookie("refresh_token", refreshCookieClearOptions);
 
     return apiResponse(res, 200, "Logged out successfully");
 });
@@ -153,11 +150,7 @@ export const changePassword = asyncHandler(async (req, res) => {
 
     await RefreshToken.updateMany({ user: user._id }, { isRevoked: true });
 
-    res.clearCookie("refresh_token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-    });
+    res.clearCookie("refresh_token", refreshCookieClearOptions);
 
     return apiResponse(res, 200, "Password changed successfully");
 });
@@ -237,11 +230,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
     // revoke all refresh tokens — force re-login on all devices
     await RefreshToken.updateMany({ user: user._id }, { isRevoked: true });
 
-    res.clearCookie("refresh_token", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-    });
+    res.clearCookie("refresh_token", refreshCookieClearOptions);
 
     return apiResponse(res, 200, "Password reset successfully");
 });

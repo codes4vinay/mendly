@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import RefreshToken from "../models/RefreshToken.js";
+import { refreshCookieOptions } from "./refreshCookieOptions.js";
 
 const generateTokens = async (userId, ip, res) => {
     const accessToken = jwt.sign(
@@ -19,12 +20,7 @@ const generateTokens = async (userId, ip, res) => {
         createdByIp: ip,
     });
 
-    res.cookie("refresh_token", refreshTokenValue, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("refresh_token", refreshTokenValue, refreshCookieOptions);
 
     return { accessToken };
 };
