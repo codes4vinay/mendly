@@ -6,7 +6,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
-import { globalLimiter } from "./middleware/rateLimiter.js";
 
 import authRoutes from "./routes/auth.js";
 import serviceCentreRoutes from "./routes/serviceCentre.js";
@@ -46,7 +45,6 @@ console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());         // parses cookies so we can read req.cookies
-app.use(globalLimiter);
 
 // ─── Static Files ──────────────────────────────────────────────
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
