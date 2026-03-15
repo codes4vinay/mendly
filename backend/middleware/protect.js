@@ -12,17 +12,21 @@ const protect = asyncHandler(async (req, res, next) => {
 
     if (!token) throw new ApiError(401, "Not authorized, no token");
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
-    const user = await User.findById(decoded.id).select("-password");
-    if (!user) throw new ApiError(401, "User no longer exists");
-    if (!user.isActive) throw new ApiError(401, "Account has been deactivated");
-
-    req.user = user;
-    next();
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const user = await User.findById(decoded.id).select("-password");
+        if (!user) throw new ApiError(401, "User no longer exists");
+        if (!user.isActive) throw new ApiError(401, "Account has been deactivated");
+        req.user = user;
+        next();
+    } catch (error) {
+        if (error.name === "TokenExpiredError") throw new ApiError(401, "Token expired");
+        if (error.name === "JsonWebTokenError") throw new ApiError(401, "Invalid token");
+        throw new ApiError(401, "Not authorized");
+    }
 });
 
-// separate middleware — use only on routes that need verified email
+// separate middleware for email verification
 export const requireEmailVerified = (req, res, next) => {
     if (!req.user.isEmailVerified) {
         throw new ApiError(403, "Please verify your email first");

@@ -24,10 +24,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ─── Security ──────────────────────────────────────────────────
-app.use(helmet());
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    credentials: true,             // required for httpOnly cookies to work
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 // ─── Core Middleware ───────────────────────────────────────────

@@ -1,16 +1,13 @@
 import { format } from "date-fns";
 
-// format date
 export const formatDate = (date) => {
     return format(new Date(date), "dd MMM yyyy");
 };
 
-// format date with time
 export const formatDateTime = (date) => {
     return format(new Date(date), "dd MMM yyyy, hh:mm a");
 };
 
-// format price in INR
 export const formatPrice = (price) => {
     return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -18,7 +15,6 @@ export const formatPrice = (price) => {
     }).format(price);
 };
 
-// get status color for badges
 export const getStatusColor = (status) => {
     const colors = {
         pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
@@ -35,7 +31,6 @@ export const getStatusColor = (status) => {
     return colors[status] || "bg-gray-100 text-gray-800";
 };
 
-// truncate text
 export const truncate = (text, length = 100) => {
     if (!text) return "";
     return text.length > length ? text.substring(0, length) + "..." : text;

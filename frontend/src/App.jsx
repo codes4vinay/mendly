@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute, RoleRoute } from "./routes/ProtectedRoute";
+import GuestRoute from "./routes/GuestRoute";
 import useTheme from "./hooks/useTheme";
 
 // auth pages
@@ -45,23 +46,29 @@ import AdminReviews from "./pages/admin/Reviews";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
-  useTheme(); // initializes dark mode
+  useTheme();
 
   return (
     <Routes>
       {/* public routes */}
       <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/verify-otp" element={<VerifyOtp />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/services" element={<Services />} />
       <Route path="/services/:id" element={<ServiceDetail />} />
       <Route path="/service-centres" element={<ServiceCentres />} />
       <Route path="/service-centres/:id" element={<ServiceCentreDetail />} />
       <Route path="/marketplace" element={<Marketplace />} />
       <Route path="/marketplace/:id" element={<ProductDetail />} />
+
+      {/* verify otp — stays public */}
+      <Route path="/verify-otp" element={<VerifyOtp />} />
+
+      {/* guest only routes — redirect if logged in */}
+      <Route element={<GuestRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+      </Route>
 
       {/* user protected routes */}
       <Route element={<ProtectedRoute />}>

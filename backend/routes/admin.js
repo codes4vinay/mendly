@@ -5,13 +5,27 @@ import authorize from "../middleware/authorize.js";
 
 const router = express.Router();
 
-// all admin routes — protected + admin role only
 router.use(protect, authorize("admin"));
 
+// stats
 router.get("/stats", adminController.getDashboardStats);
+
+// users
 router.get("/users", adminController.getAllUsers);
 router.put("/users/:id/toggle", adminController.toggleUserStatus);
+
+// service centres
+router.get("/service-centres", adminController.getAllServiceCentres);
 router.put("/service-centres/:id/toggle", adminController.toggleServiceCentreStatus);
+
+// bookings
+router.get("/bookings", adminController.getAllBookings);
+
+// orders
+router.get("/orders", adminController.getAllOrders);
+
+// reviews
+router.get("/reviews", adminController.getAllReviews);
 router.put("/reviews/:id/toggle", adminController.toggleReviewVisibility);
 
 export default router;
