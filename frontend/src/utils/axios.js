@@ -22,6 +22,14 @@ api.interceptors.request.use(
 
 let isRefreshing = false;
 let failedQueue = [];
+const authBypassPaths = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/refresh",
+    "/auth/send-otp",
+    "/auth/verify-otp",
+    "/auth/reset-password",
+];
 
 const processQueue = (error, token = null) => {
     failedQueue.forEach((prom) => {
@@ -35,8 +43,17 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+        const requestPath = originalRequest?.url || "";
+        const shouldBypassRefresh = authBypassPaths.some((path) =>
+            requestPath.includes(path)
+        );
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (
+            error.response?.status === 401 &&
+            originalRequest &&
+            !originalRequest._retry &&
+            !shouldBypassRefresh
+        ) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
