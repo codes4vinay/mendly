@@ -57,14 +57,4 @@ jobs:
           app-name: 'mendly-backend'
           slot-name: 'Production'
           package: .
-```
 
----
-
-### Key changes:
-```
-node-version: 20.x     ← changed from 24.x
-cd backend             ← goes into backend folder
-path: backend          ← uploads only backend folder
-removed npm run build  ← backend has no build step
-removed npm run test   ← no tests configured
