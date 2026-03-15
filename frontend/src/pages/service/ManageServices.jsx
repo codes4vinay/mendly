@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Plus, Pencil, Trash2, Loader2, Wrench, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,11 +52,13 @@ const serviceSchema = z.object({
 });
 
 const ManageServices = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [hasCentre, setHasCentre] = useState(true);
 
   const {
     register,
@@ -77,14 +80,27 @@ const ManageServices = () => {
     try {
       const res = await api.get("/services/my/services");
       setServices(res.data.data.services);
+      setHasCentre(true);
     } catch (error) {
+      if (error.response?.status === 404) {
+        setHasCentre(false);
+        return;
+      }
+
       console.error(error);
+      toast.error(error.response?.data?.message || "Failed to load services");
     } finally {
       setLoading(false);
     }
   };
 
   const openAdd = () => {
+    if (!hasCentre) {
+      toast.info("Create your service centre before adding services.");
+      navigate("/service-dashboard/centre");
+      return;
+    }
+
     setEditing(null);
     reset({ priceType: "fixed", category: "mobile_repair" });
     setOpen(true);
@@ -109,6 +125,14 @@ const ManageServices = () => {
       setOpen(false);
       fetchServices();
     } catch (error) {
+      if (error.response?.status === 404) {
+        setHasCentre(false);
+        setOpen(false);
+        toast.info("Create your service centre before adding services.");
+        navigate("/service-dashboard/centre");
+        return;
+      }
+
       toast.error(error.response?.data?.message || "Failed to save");
     } finally {
       setSaving(false);
@@ -212,6 +236,22 @@ const ManageServices = () => {
                 </Card>
               </motion.div>
             ))}
+          </div>
+        ) : !hasCentre ? (
+          <div className="text-center py-20">
+            <Wrench className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-30" />
+            <h3 className="text-lg font-semibold mb-2">
+              Create your service centre first
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              You need a service centre before you can add repair services.
+            </p>
+            <Button
+              onClick={() => navigate("/service-dashboard/centre")}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              Go to Centre Setup
+            </Button>
           </div>
         ) : (
           <div className="text-center py-20">
