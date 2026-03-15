@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 let socket = null;
-const serverUrl = "http://localhost:5000";
+const serverUrl = "https://mendly-backend-fnbdhxakadhvezet.centralindia-01.azurewebsites.net";
 
 /**
  * Initialize socket connection with authentication
