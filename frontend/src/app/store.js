@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import authReducer from "../features/auth/authSlice";
 import notificationReducer from "../features/notification/notificationSlice";
 import chatReducer from "../features/chat/chatSlice";
+import chatbotReducer from "../features/chatbot/chatbotSlice";
 
 const persistConfig = {
     key: "root",
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     auth: authReducer,
     notification: notificationReducer,
     chat: chatReducer,
+    chatbot: chatbotReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

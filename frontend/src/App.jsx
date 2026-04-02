@@ -3,6 +3,10 @@ import { ProtectedRoute, RoleRoute } from "./routes/ProtectedRoute";
 import GuestRoute from "./routes/GuestRoute";
 import useTheme from "./hooks/useTheme";
 import { useNotifications } from "./hooks/useNotifications";
+import {
+  ChatbotWidget,
+  ChatbotGreetingPopup,
+} from "./features/chatbot/components";
 
 // auth pages
 import Login from "./pages/auth/Login";
@@ -58,90 +62,100 @@ const App = () => {
   useNotifications();
 
   return (
-    <Routes>
-      {/* public routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/services" element={<Services />} />
-      <Route path="/services/:id" element={<ServiceDetail />} />
-      <Route path="/service-centres" element={<ServiceCentres />} />
-      <Route path="/service-centres/:id" element={<ServiceCentreDetail />} />
-      <Route path="/marketplace" element={<Marketplace />} />
-      <Route path="/marketplace/:id" element={<ProductDetail />} />
-      <Route path="/about" element={<AboutUs />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/privacy-policy" element={<TrustPage />} />
+    <>
+      <ChatbotGreetingPopup />
+      <ChatbotWidget />
+      <Routes>
+        {/* public routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/services/:id" element={<ServiceDetail />} />
+        <Route path="/service-centres" element={<ServiceCentres />} />
+        <Route path="/service-centres/:id" element={<ServiceCentreDetail />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+        <Route path="/marketplace/:id" element={<ProductDetail />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/privacy-policy" element={<TrustPage />} />
 
-      {/* verify otp — stays public */}
-      <Route path="/verify-otp" element={<VerifyOtp />} />
+        {/* verify otp — stays public */}
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
-      {/* guest only routes — redirect if logged in */}
-      <Route element={<GuestRoute />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-      </Route>
-
-      {/* user protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/chats" element={<ChatsList />} />
-        <Route path="/chat/:chatId" element={<ChatWindow />} />
-        <Route path="/profile" element={<Profile />} />
-
-        <Route element={<RoleRoute allowedRoles={["user"]} />}>
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/my-orders" element={<MyOrders />} />
-          <Route path="/notifications" element={<Notifications />} />
+        {/* guest only routes — redirect if logged in */}
+        <Route element={<GuestRoute />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Route>
-      </Route>
 
-      {/* service centre protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<RoleRoute allowedRoles={["service"]} />}>
-          <Route path="/service-dashboard" element={<ServiceDashboard />} />
-          <Route path="/service-dashboard/centre" element={<ManageCentre />} />
-          <Route
-            path="/service-dashboard/services"
-            element={<ManageServices />}
-          />
-          <Route
-            path="/service-dashboard/products"
-            element={<ManageProducts />}
-          />
-          <Route
-            path="/service-dashboard/bookings"
-            element={<CentreBookings />}
-          />
-          <Route path="/service-dashboard/orders" element={<CentreOrders />} />
-          <Route
-            path="/service-dashboard/reviews"
-            element={<CentreReviews />}
-          />
+        {/* user protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/chats" element={<ChatsList />} />
+          <Route path="/chat/:chatId" element={<ChatWindow />} />
+          <Route path="/profile" element={<Profile />} />
+
+          <Route element={<RoleRoute allowedRoles={["user"]} />}>
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/notifications" element={<Notifications />} />
+          </Route>
         </Route>
-      </Route>
 
-      {/* admin protected routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<RoleRoute allowedRoles={["admin"]} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route
-            path="/admin/service-centres"
-            element={<AdminServiceCentres />}
-          />
-          <Route path="/admin/services" element={<AdminServices />} />
-          <Route path="/admin/products" element={<AdminProducts />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/admin/reviews" element={<AdminReviews />} />
+        {/* service centre protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<RoleRoute allowedRoles={["service"]} />}>
+            <Route path="/service-dashboard" element={<ServiceDashboard />} />
+            <Route
+              path="/service-dashboard/centre"
+              element={<ManageCentre />}
+            />
+            <Route
+              path="/service-dashboard/services"
+              element={<ManageServices />}
+            />
+            <Route
+              path="/service-dashboard/products"
+              element={<ManageProducts />}
+            />
+            <Route
+              path="/service-dashboard/bookings"
+              element={<CentreBookings />}
+            />
+            <Route
+              path="/service-dashboard/orders"
+              element={<CentreOrders />}
+            />
+            <Route
+              path="/service-dashboard/reviews"
+              element={<CentreReviews />}
+            />
+          </Route>
         </Route>
-      </Route>
 
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* admin protected routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<RoleRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route
+              path="/admin/service-centres"
+              element={<AdminServiceCentres />}
+            />
+            <Route path="/admin/services" element={<AdminServices />} />
+            <Route path="/admin/products" element={<AdminProducts />} />
+            <Route path="/admin/bookings" element={<AdminBookings />} />
+            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/reviews" element={<AdminReviews />} />
+          </Route>
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 };
 

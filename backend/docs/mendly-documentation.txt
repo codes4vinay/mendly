@@ -1,0 +1,319 @@
+MENDLY - SERVICE PLATFORM DOCUMENTATION
+
+================================
+1. OVERVIEW
+================================
+
+Mendly is a comprehensive service booking and management platform that connects service providers with users who need services. The platform includes booking management, payments, real-time chat, notifications, and a review system.
+
+Web URL: www.mendly.com
+Customer Support Email: support@mendly.com
+
+================================
+2. KEY FEATURES
+================================
+
+2.1 SERVICE BROWSING & BOOKING
+- Browse available services from service centers
+- View detailed service descriptions, pricing, and availability
+- Real-time booking status updates
+- Book services with flexible scheduling options
+- Cancellation and rescheduling options
+
+2.2 PAYMENT SYSTEM
+- Secure Razorpay integration for payments
+- Multiple payment methods supported
+- Order history and invoices
+- Refund policies and tracking
+
+2.3 REAL-TIME COMMUNICATION
+- Live chat between users and service providers
+- Real-time notifications via Socket.IO
+- Read/unread message tracking
+- Conversation history
+
+2.4 REVIEWS & RATINGS
+- Rate services after completion
+- Share feedback and reviews
+- View other user reviews
+- Service provider ratings
+
+2.5 VENUE MANAGEMENT
+- Service centers can manage multiple locations
+- Operating hours and availability management
+- Service inventory tracking
+
+2.6 ADMIN DASHBOARD
+- User management and moderation
+- Service and service center management
+- Payment and order monitoring
+- Analytics and reporting
+
+================================
+3. GETTING STARTED
+================================
+
+3.1 REGISTRATION & LOGIN
+- Sign up with email and password
+- Receive OTP verification email
+- Create user profile with name and contact details
+- Password reset functionality available
+
+3.2 USER ROLES
+- END USERS: Browse and book services
+- SERVICE PROVIDERS: Manage services and bookings
+- ADMINS: Platform management and moderation
+
+3.3 ACCOUNT SETTINGS
+- Update profile information
+- Change password
+- Notification preferences
+- Privacy settings
+
+================================
+4. SERVICE BOOKING GUIDE
+================================
+
+4.1 HOW TO BOOK A SERVICE
+1. Navigate to Services
+2. Browse or search for desired services
+3. Select a service center location
+4. Choose preferred date and time
+5. Review service details and pricing
+6. Proceed to checkout
+7. Make payment via Razorpay
+8. Receive booking confirmation
+
+4.2 BOOKING STATUS
+- PENDING: Awaiting service provider confirmation
+- CONFIRMED: Service provider has accepted
+- IN_PROGRESS: Service is being delivered
+- COMPLETED: Service has been finished
+- CANCELLED: Booking was cancelled
+
+4.3 CANCELLATION & RESCHEDULING
+- Cancel up to 24 hours before booking
+- Rescheduling available based on availability
+- Refund policies apply per service terms
+- Contact support for special requests
+
+================================
+5. PAYMENT INFORMATION
+================================
+
+5.1 PAYMENT METHODS
+- Credit Card (Visa, Mastercard)
+- Debit Card
+- UPI (Unified Payments Interface)
+- Other payment methods via Razorpay
+
+5.2 PRICING & CHARGES
+- Service pricing varies by provider
+- Platform fees may apply (transparent pricing)
+- GST/Taxes included in total amount
+- No hidden charges
+
+5.3 INVOICES & RECEIPTS
+- Digital invoice sent to registered email
+- Download from Order History
+- Invoice contains service details and payment breakdown
+
+5.4 REFUNDS
+- Refunds processed within 5-7 business days
+- Refund amount depends on cancellation policy
+- Non-refundable services marked clearly
+- Contact support for refund status
+
+================================
+6. COMMUNICATION & SUPPORT
+================================
+
+6.1 IN-APP CHAT
+- Real-time messaging with service providers
+- File/image sharing capabilities
+- Chat history available
+- Notifications for new messages
+
+6.2 NOTIFICATIONS
+- Email notifications for bookings
+- Push notifications for updates
+- SMS alerts for critical updates (optional)
+- Customize notification preferences
+
+6.3 CONTACT US
+- Email: support@mendly.com
+- In-app support ticketing system
+- Live chat with support team (business hours)
+- Response time: 24-48 hours
+
+6.4 FAQ & HELP CENTER
+- Common questions and answers
+- Troubleshooting guides
+- Video tutorials available
+- Knowledge base articles
+
+================================
+7. REVIEWS & RATINGS
+================================
+
+7.1 LEAVING REVIEWS
+- Rate services 1-5 stars
+- Write detailed feedback
+- Include photos of service work (optional)
+- Submit within 7 days of booking completion
+
+7.2 SERVICE RATINGS
+- Ratings visible on service pages
+- Filter services by rating
+- Reviews help improve service quality
+- Authentic reviews only (verified bookings)
+
+7.3 DISPUTE RESOLUTION
+- Report misleading or fake reviews
+- Appeal decision if unfairly rated
+- Support team reviews disputes
+- Resolution within 5-7 days
+
+================================
+8. SERVICE PROVIDER INFORMATION
+================================
+
+8.1 SERVICE PROVIDERS
+- Verified and vetted professionals
+- Complete background verification
+- Professional licenses and certifications
+- Insurance coverage details
+
+8.2 SERVICE CENTERS
+- Multiple locations available
+- Detailed address and contact info
+- Operating hours clearly displayed
+- Facility information and amenities
+
+8.3 EXPERTISE & CATEGORIES
+Service categories include:
+- Maintenance & Repair
+- Cleaning Services
+- Installation Services
+- Consultation Services
+- And more...
+
+================================
+9. SECURITY & PRIVACY
+================================
+
+9.1 DATA SECURITY
+- SSL encryption for all transactions
+- Secure password hashing
+- Two-factor authentication available
+- Regular security audits
+
+9.2 PRIVACY POLICY
+- Personal data protection
+- No sharing with third parties
+- Opt-out from marketing emails
+- Data deletion on request
+
+9.3 ACCOUNT SAFETY
+- Do not share password or OTP
+- Verify payment pages are secure
+- Report suspicious activity immediately
+- Use strong, unique passwords
+
+================================
+10. TECHNICAL SUPPORT
+================================
+
+10.1 COMMON ISSUES
+- Login problems: Verify email/password, use forgot password
+- Payment issues: Check card details, try different payment method
+- Booking errors: Clear cache, try different browser
+- Chat not loading: Refresh page, check internet connection
+
+10.2 TROUBLESHOOTING
+- Update mobile app to latest version
+- Clear browser cookies and cache
+- Disable ad blockers
+- Try incognito/private browsing mode
+
+10.3 REPORT BUGS
+- Email with detailed description to support@mendly.com
+- Include screenshots and browser information
+- Provide reproduction steps
+- Bug bounty program available
+
+================================
+11. POLICIES & TERMS
+================================
+
+11.1 TERMS OF SERVICE
+- User responsibilities and obligations
+- Platform rules and regulations
+- Liability limitations
+- Dispute resolution process
+
+11.2 CANCELLATION POLICY
+- Cancellation deadline: 24 hours before booking
+- Cancellation fee: As per service provider terms
+- Full refund: If cancelled within 24 hours
+- Non-refundable services: Clearly marked
+
+11.3 ACCEPTABLE USE
+- No fraudulent bookings
+- No harassment or abuse
+- No spam or scams
+- Violation results in account suspension
+
+11.4 INTELLECTUAL PROPERTY
+- All content owned by Mendly or partners
+- User-generated content licensed to Mendly
+- No reproduction without permission
+
+================================
+12. FREQUENTLY ASKED QUESTIONS
+================================
+
+12.1 BOOKING QUESTIONS
+Q: How long does it take to confirm a booking?
+A: Usually 2-4 hours, confirmed bookings are updated in real-time
+
+Q: Can I book for someone else?
+A: Yes, provide their details during booking
+
+Q: What if the service provider doesn't show up?
+A: Contact support immediately for refund and rebooking options
+
+12.2 PAYMENT QUESTIONS
+Q: Is my payment information safe?
+A: Yes, we use Razorpay with end-to-end encryption
+
+Q: Can I pay in installments?
+A: Some services may offer installment options, check at checkout
+
+Q: What if payment fails?
+A: Retry with same or different payment method; contact support if issue persists
+
+12.3 GENERAL QUESTIONS
+Q: Is there an age requirement?
+A: Must be 18+ to use the platform
+
+Q: How do I delete my account?
+A: Go to Settings > Account > Delete Account (data deleted after 30 days)
+
+Q: Is Mendly available on mobile?
+A: Yes, available on iOS and Android via app stores
+
+================================
+13. CONTACT & SUPPORT CHANNELS
+================================
+
+Email: support@mendly.com
+Website: www.mendly.com
+Mobile App: Available on iOS and Android
+Operating Hours: 9 AM - 6 PM (IST)
+Language Support: English, Hindi, Regional Languages
+
+================================
+
+For latest updates and announcements, visit www.mendly.com/updates
+Thank you for using Mendly!
