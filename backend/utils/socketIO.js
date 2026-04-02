@@ -15,10 +15,11 @@ export const initIO = (server) => {
                 if (isOriginAllowed(origin)) {
                     return callback(null, true);
                 }
-
+                console.warn(`⚠️  Socket.IO blocked origin: ${origin}`);
                 return callback(new Error(`Origin not allowed by CORS: ${origin}`));
             },
             credentials: true,
+            optionsSuccessStatus: 200,
         },
     });
 

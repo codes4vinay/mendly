@@ -32,15 +32,17 @@ app.use(cors({
         if (isOriginAllowed(origin)) {
             return callback(null, true);
         }
-
+        // Log rejected origins for debugging
+        console.warn(`⚠️  CORS blocked origin: ${origin}`);
         return callback(new Error(`Origin not allowed by CORS: ${origin}`));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 200,
 }));
 
-console.log(`Allowed CORS origins: ${allowedOrigins.join(", ")}`);
+console.log(`✅ Allowed CORS origins: ${allowedOrigins.join(", ")}`);
 
 // ─── Core Middleware ───────────────────────────────────────────
 app.use(express.json({ limit: "10mb" }));
