@@ -22,7 +22,7 @@ export const uploadBufferToCloudinary = (buffer, options = {}) =>
         const uploadStream = cloudinary.uploader.upload_stream(
             {
                 resource_type: "image",
-                folder: options.folder || "mendly",
+                folder: options.folder || "rpar",
             },
             (error, result) => {
                 if (error) return reject(error);

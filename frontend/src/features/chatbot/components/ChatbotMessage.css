@@ -34,7 +34,7 @@
 }
 
 .user-message .message-content {
-    background-color: #007bff;
+    background-color: #4f46e5;
     color: white;
     border-bottom-right-radius: 4px;
 }
@@ -75,6 +75,6 @@
     }
 
     .user-message .message-content {
-        background-color: #0056b3;
+        background-color: #4338ca;
     }
 }

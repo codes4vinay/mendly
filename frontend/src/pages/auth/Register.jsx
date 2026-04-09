@@ -87,14 +87,14 @@ const Register = () => {
             <div className="bg-indigo-600 p-2 rounded-xl">
               <Wrench className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-2xl text-indigo-600">Mendly</span>
+            <span className="font-bold text-2xl text-indigo-600">RPAR</span>
           </Link>
         </div>
 
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create account</CardTitle>
-            <CardDescription>Join Mendly today</CardDescription>
+            <CardDescription>Join RPAR today</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

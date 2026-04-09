@@ -67,7 +67,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/uploads", uploadRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────
-app.get("/", (req, res) => res.json({ message: "Mendly API running ✅" }));
+app.get("/", (req, res) => res.json({ message: "RPAR API running ✅" }));
 
 // ─── Error Handling — must be last ────────────────────────────
 app.use(notFound);

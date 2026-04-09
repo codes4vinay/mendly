@@ -1,6 +1,6 @@
 import api from "@/utils/axios";
 
-export const uploadImages = async (files, folder = "mendly") => {
+export const uploadImages = async (files, folder = "rpar") => {
   if (!files || files.length === 0) {
     return [];
   }

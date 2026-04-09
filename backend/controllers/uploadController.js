@@ -17,7 +17,7 @@ export const uploadImages = asyncHandler(async (req, res) => {
         throw new ApiError(503, "Cloudinary is not configured on the server");
     }
 
-    const folder = req.query.folder || "mendly";
+    const folder = req.query.folder || "rpar";
     const uploads = await Promise.all(
         req.files.map((file) =>
             uploadBufferToCloudinary(file.buffer, { folder })

@@ -96,7 +96,7 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("mendly_cart") || "[]");
+    const cart = JSON.parse(localStorage.getItem("rpar_cart") || "[]");
     const existingIndex = cart.findIndex(
       (item) => item.productId === product._id,
     );
@@ -117,7 +117,7 @@ const ProductDetail = () => {
         },
       ];
     }
-    localStorage.setItem("mendly_cart", JSON.stringify(nextCart));
+    localStorage.setItem("rpar_cart", JSON.stringify(nextCart));
     toast.success("Added to cart");
     navigate("/cart");
   };

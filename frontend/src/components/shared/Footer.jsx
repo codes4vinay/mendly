@@ -12,7 +12,7 @@ const Footer = () => {
               <div className="bg-indigo-600 p-1.5 rounded-lg">
                 <Wrench className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-xl text-indigo-600">Mendly</span>
+              <span className="font-bold text-xl text-indigo-600">RPAR</span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Your trusted platform for electronics repair and marketplace.
@@ -107,7 +107,7 @@ const Footer = () => {
 
         <div className="border-t mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Mendly. All rights reserved.
+            © {new Date().getFullYear()} RPAR. All rights reserved.
           </p>
         </div>
       </div>

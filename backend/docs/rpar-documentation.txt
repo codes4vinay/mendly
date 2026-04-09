@@ -1,13 +1,13 @@
-MENDLY - SERVICE PLATFORM DOCUMENTATION
+RPAR - SERVICE PLATFORM DOCUMENTATION
 
 ================================
 1. OVERVIEW
 ================================
 
-Mendly is a comprehensive service booking and management platform that connects service providers with users who need services. The platform includes booking management, payments, real-time chat, notifications, and a review system.
+RPAR is a comprehensive service booking and management platform that connects service providers with users who need services. The platform includes booking management, payments, real-time chat, notifications, and a review system.
 
-Web URL: www.mendly.com
-Customer Support Email: support@mendly.com
+Web URL: www.rpar.com
+Customer Support Email: support@rpar.com
 
 ================================
 2. KEY FEATURES
@@ -141,7 +141,7 @@ Customer Support Email: support@mendly.com
 - Customize notification preferences
 
 6.3 CONTACT US
-- Email: support@mendly.com
+- Email: support@rpar.com
 - In-app support ticketing system
 - Live chat with support team (business hours)
 - Response time: 24-48 hours
@@ -237,7 +237,7 @@ Service categories include:
 - Try incognito/private browsing mode
 
 10.3 REPORT BUGS
-- Email with detailed description to support@mendly.com
+- Email with detailed description to support@rpar.com
 - Include screenshots and browser information
 - Provide reproduction steps
 - Bug bounty program available
@@ -265,8 +265,8 @@ Service categories include:
 - Violation results in account suspension
 
 11.4 INTELLECTUAL PROPERTY
-- All content owned by Mendly or partners
-- User-generated content licensed to Mendly
+- All content owned by RPAR or partners
+- User-generated content licensed to RPAR
 - No reproduction without permission
 
 ================================
@@ -300,20 +300,20 @@ A: Must be 18+ to use the platform
 Q: How do I delete my account?
 A: Go to Settings > Account > Delete Account (data deleted after 30 days)
 
-Q: Is Mendly available on mobile?
+Q: Is RPAR available on mobile?
 A: Yes, available on iOS and Android via app stores
 
 ================================
 13. CONTACT & SUPPORT CHANNELS
 ================================
 
-Email: support@mendly.com
-Website: www.mendly.com
+Email: support@rpar.com
+Website: www.rpar.com
 Mobile App: Available on iOS and Android
 Operating Hours: 9 AM - 6 PM (IST)
 Language Support: English, Hindi, Regional Languages
 
 ================================
 
-For latest updates and announcements, visit www.mendly.com/updates
-Thank you for using Mendly!
+For latest updates and announcements, visit www.rpar.com/updates
+Thank you for using RPAR!

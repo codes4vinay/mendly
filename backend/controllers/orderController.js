@@ -97,7 +97,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         checkout: buildRazorpayCheckoutPayload({
             razorpayOrder,
             publicConfig: getRazorpayPublicConfig(),
-            entityName: "Mendly Order",
+            entityName: "RPAR Order",
         }),
     });
 });

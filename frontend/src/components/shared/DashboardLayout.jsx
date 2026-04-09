@@ -81,7 +81,7 @@ const DashboardLayout = ({ children }) => {
           <div className="bg-indigo-600 p-1.5 rounded-lg">
             <Wrench className="h-5 w-5 text-white" />
           </div>
-          <span className="font-bold text-lg text-indigo-600">Mendly</span>
+          <span className="font-bold text-lg text-indigo-600">RPAR</span>
         </Link>
       </div>
 

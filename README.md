@@ -1,4 +1,4 @@
-# MENDLY - Repair Services Platform
+# RPAR - Repair Services Platform
 
 ## 🎯 Problem Statement
 
@@ -12,9 +12,9 @@ In today's fast-paced world, finding reliable and efficient repair services for 
 
 ## 💡 Solution
 
-**MENDLY** bridges this gap by creating a one-stop digital platform that connects users with verified repair professionals, ensuring trust, efficiency, and convenience. The platform streamlines the repair process, enabling customers to book services, track progress, and provide feedback, while service providers gain access to a broader customer base.
+**RPAR** bridges this gap by creating a one-stop digital platform that connects users with verified repair professionals, ensuring trust, efficiency, and convenience. The platform streamlines the repair process, enabling customers to book services, track progress, and provide feedback, while service providers gain access to a broader customer base.
 
-By leveraging technology, MENDLY enhances the repair experience for both users and service providers, fostering a community of trust and reliability in the repair industry.
+By leveraging technology, RPAR enhances the repair experience for both users and service providers, fostering a community of trust and reliability in the repair industry.
 
 ---
 
@@ -28,7 +28,7 @@ By leveraging technology, MENDLY enhances the repair experience for both users a
 - 📝 **Order Tracking** - Real-time service status updates
 - ⭐ **Reviews & Ratings** - Verified customer feedback
 - 💬 **Live Chat** - Connect with service providers
-- 🤖 **AI Assistant** - 24/7 Mendly chatbot for support
+- 🤖 **AI Assistant** - 24/7 RPAR chatbot for support
 
 ### For Service Providers
 
@@ -64,7 +64,7 @@ By leveraging technology, MENDLY enhances the repair experience for both users a
 
 - **Groq SDK** - Language model API
 - **LangChain** - LLM framework
-- **Azure OpenAI** - Embeddings
+- **Hugging Face Transformers** - Free local embeddings
 - **Pinecone** - Vector search
 
 ---
@@ -72,7 +72,7 @@ By leveraging technology, MENDLY enhances the repair experience for both users a
 ## 📁 Project Structure
 
 ```
-mendly/
+rpar/
 ├── frontend/                    # React frontend application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -113,8 +113,8 @@ mendly/
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/mendly.git
-cd mendly
+git clone https://github.com/yourusername/rpar.git
+cd rpar
 ```
 
 **2. Backend Setup**
@@ -150,7 +150,7 @@ The application will be available at:
 # Server
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/mendly
+MONGO_URI=mongodb://localhost:27017/rpar
 
 # Authentication
 ACCESS_TOKEN_SECRET=your_secret_key
@@ -164,15 +164,18 @@ CLOUDINARY_API_KEY=your_api_key
 
 # AI & Chatbot
 GROQ_API_KEY=your_groq_api_key
-OPENAI_API_KEY=your_azure_openai_key
-AZURE_OPENAI_INSTANCE_NAME=your_instance_name
+EMBEDDING_PROVIDER=local-hash
+EMBEDDING_MODEL=rpar-local-embedding-v1
+EMBEDDING_DIMENSION=1536
 PINECONE_API_KEY=your_pinecone_key
-PINECONE_INDEX_NAME=mendly-chatbot-index
+PINECONE_INDEX_NAME=rpar-chatbot-index
 
 # Email
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 ```
+
+If you are switching from Azure embeddings to the local `rpar-local-embedding-v1` setup, make sure your Pinecone index dimension matches `1536`. If your old index or namespace was created for earlier embeddings, re-index the chatbot documentation after restarting the backend.
 
 ---
 
@@ -198,7 +201,7 @@ EMAIL_PASS=your_app_password
 - `POST /api/chatbot/message` - Send message
 - `GET /api/chatbot/conversation/:id` - Get conversation history
 
-For complete API documentation, see [backend/docs/mendly-documentation.txt](backend/docs/mendly-documentation.txt)
+For complete API documentation, see [backend/docs/rpar-documentation.txt](backend/docs/rpar-documentation.txt)
 
 ---
 
@@ -231,7 +234,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Support
 
-For support, email us at **vinay@vinaydev.in** or visit our website at **mendly.vinaydev.in**
+For support, email us at **vinay@vinaydev.in** or visit our website at **rpar.vinaydev.in**
 
 ---
 

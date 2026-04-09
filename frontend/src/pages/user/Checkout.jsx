@@ -24,7 +24,7 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("mendly_cart");
+    const saved = localStorage.getItem("rpar_cart");
     if (saved) {
       try {
         setCart(JSON.parse(saved));
@@ -110,7 +110,7 @@ const Checkout = () => {
           const remainingCart = cart.filter(
             (item) => !successfulProductIds.includes(item.productId),
           );
-          localStorage.setItem("mendly_cart", JSON.stringify(remainingCart));
+          localStorage.setItem("rpar_cart", JSON.stringify(remainingCart));
           setCart(remainingCart);
         }
       }

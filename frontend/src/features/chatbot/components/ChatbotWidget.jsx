@@ -68,8 +68,8 @@ export const ChatbotWidget = () => {
       <button
         className={`chatbot-toggle-btn ${isOpen ? "open" : ""}`}
         onClick={handleToggle}
-        title="Chat with Mendly Assistant"
-        aria-label="Open Mendly Assistant"
+        title="Chat with RPAR Assistant"
+        aria-label="Open RPAR Assistant"
       >
         {isOpen ? (
           <span className="close-icon">✕</span>

@@ -110,7 +110,7 @@ const ManageProducts = () => {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
-      const uploadedPhotos = await uploadImages(newPhotos, "mendly/products");
+      const uploadedPhotos = await uploadImages(newPhotos, "rpar/products");
       const payload = {
         ...data,
         photos: [...existingPhotos, ...uploadedPhotos],

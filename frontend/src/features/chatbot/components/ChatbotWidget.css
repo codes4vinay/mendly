@@ -5,12 +5,12 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
     border: none;
     color: white;
     font-size: 24px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -20,7 +20,7 @@
 
 .chatbot-toggle-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
 }
 
 .chatbot-toggle-btn:active {
@@ -124,12 +124,12 @@
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .chatbot-toggle-btn {
-        background: linear-gradient(135deg, #0056b3 0%, #003d7a 100%);
-        box-shadow: 0 4px 12px rgba(0, 86, 179, 0.6);
+        background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+        box-shadow: 0 4px 12px rgba(67, 56, 202, 0.45);
     }
 
     .chatbot-toggle-btn:hover {
-        box-shadow: 0 6px 20px rgba(0, 86, 179, 0.8);
+        box-shadow: 0 6px 20px rgba(67, 56, 202, 0.55);
     }
 
     .chatbot-toggle-btn.open {

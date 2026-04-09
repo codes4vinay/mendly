@@ -2,13 +2,13 @@
     position: fixed;
     bottom: 100px;
     right: 24px;
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
     border-radius: 28px;
     padding: 14px 18px;
     display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
     z-index: 998;
     animation: slideIn 0.4s ease-out;
     max-width: 300px;

@@ -281,7 +281,7 @@ const Home = () => {
       <section className="py-16 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold">How Mendly works</h2>
+            <h2 className="text-3xl font-bold">How RPAR works</h2>
             <p className="text-muted-foreground mt-2">
               Get your device fixed in 3 simple steps
             </p>
@@ -407,7 +407,7 @@ const Home = () => {
         >
           <h2 className="text-3xl font-bold mb-4">Own a repair business?</h2>
           <p className="text-indigo-100 mb-8 max-w-xl mx-auto">
-            Join Mendly as a service centre and reach thousands of customers
+            Join RPAR as a service centre and reach thousands of customers
             looking for expert repairs.
           </p>
           <Button

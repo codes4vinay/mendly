@@ -35,10 +35,10 @@ const TrustPage = () => {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
           Privacy Policy
         </p>
-        <h1 className="text-4xl font-bold mt-4">How Mendly handles data</h1>
+        <h1 className="text-4xl font-bold mt-4">How RPAR handles data</h1>
         <p className="text-muted-foreground mt-6 leading-7">
           This page gives a simple overview of how platform information is used
-          inside Mendly. It is a product-facing privacy page and should be
+          inside RPAR. It is a product-facing privacy page and should be
           reviewed further if you need a legally finalized policy for production
           launch.
         </p>
