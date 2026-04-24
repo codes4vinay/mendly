@@ -35,8 +35,8 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 
     const total = await User.countDocuments(filter);
     const users = await User.find(filter)
-        .skip((page - 1) * limit)
-        .limit(Number(limit))
+        .skip((page - 1) * limit)  //for pagination
+        .limit(Number(limit))      
         .sort({ createdAt: -1 });
 
     return apiResponse(res, 200, "Users fetched successfully", {
@@ -97,7 +97,7 @@ export const getAllBookings = asyncHandler(async (req, res) => {
 
     const total = await Booking.countDocuments(filter);
     const bookings = await Booking.find(filter)
-        .populate("customer", "name email phone")
+        .populate("customer", "name email phone") //only fetch name, email and phone of customer
         .populate("service", "name category")
         .populate("serviceCentre", "name address")
         .skip((page - 1) * limit)

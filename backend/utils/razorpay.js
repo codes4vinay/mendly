@@ -15,7 +15,7 @@ const getCredentials = () => {
 
 const getAuthHeader = () => {
     const { keyId, keySecret } = getCredentials();
-    return `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
+    return `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`; // Encode credentials in Base64 for Basic Auth
 };
 
 export const getRazorpayPublicConfig = () => {

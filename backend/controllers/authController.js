@@ -34,7 +34,7 @@ export const register = asyncHandler(async (req, res) => {
 
     await sendEmail({
         to: user.email,
-        subject: "Verify your RPAR account",
+        subject: "Verify your Mendly account",
         html: verifyEmailTemplate(otp),
     });
 

@@ -74,7 +74,7 @@ const ManageCentre = () => {
     try {
       const uploadedPhotos = await uploadImages(
         newPhotos,
-        "rpar/service-centres",
+        "mendly/service-centres",
       );
       const payload = {
         ...data,

@@ -10,7 +10,7 @@ const Cart = () => {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("rpar_cart");
+    const saved = localStorage.getItem("mendly_cart");
     if (saved) {
       try {
         setCart(JSON.parse(saved));
@@ -22,7 +22,7 @@ const Cart = () => {
 
   const saveCart = (nextCart) => {
     setCart(nextCart);
-    localStorage.setItem("rpar_cart", JSON.stringify(nextCart));
+    localStorage.setItem("mendly_cart", JSON.stringify(nextCart));
   };
 
   const updateQuantity = (item, delta) => {

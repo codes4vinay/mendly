@@ -18,11 +18,12 @@ export const ensureCloudinaryConfigured = () => {
 };
 
 export const uploadBufferToCloudinary = (buffer, options = {}) =>
+    //buffer -> file buffer from multer
     new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             {
                 resource_type: "image",
-                folder: options.folder || "rpar",
+                folder: options.folder || "mendly",
             },
             (error, result) => {
                 if (error) return reject(error);

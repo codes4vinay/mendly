@@ -110,7 +110,7 @@ const ServiceDetail = () => {
     try {
       const uploadedDevicePhotos = await uploadImages(
         devicePhotos,
-        "rpar/device-photos",
+        "mendly/device-photos",
       );
       const res = await api.post("/bookings", {
         service: service._id,

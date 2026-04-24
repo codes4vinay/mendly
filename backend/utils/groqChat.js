@@ -6,12 +6,12 @@ dotenv.config();
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const SYSTEM_PROMPT = `You are a helpful assistant for RPAR, a service platform that connects users with professional services and products.
+const SYSTEM_PROMPT = `You are a helpful assistant for Mendly, a service platform that connects users with professional services and products.
 
 IMPORTANT INSTRUCTIONS:
 - Provide clear, concise, and helpful answers based on the provided documentation
-- Use the context from RPAR documentation to answer questions accurately
-- If information is not in the context, politely inform the user and suggest contacting support at support@rpar.com
+- Use the context from Mendly documentation to answer questions accurately
+- If information is not in the context, politely inform the user and suggest contacting support at support@mendly.com
 - Be friendly, professional, and empathetic in your tone
 - Do NOT include markdown formatting symbols (**, *, #, etc.) in your response - use plain text
 - Format lists using numbers or dashes without extra symbols
@@ -33,7 +33,7 @@ export async function getGroqResponse(userMessage, conversationHistory = []) {
             ...conversationHistory,
             {
                 role: 'user',
-                content: `Context from RPAR documentation:\n${context}\n\nUser Question: ${userMessage}`,
+                content: `Context from Mendly documentation:\n${context}\n\nUser Question: ${userMessage}`,
             },
         ];
 

@@ -16,14 +16,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let vectorStore = null;
 
 const EMBEDDING_PROVIDER = (process.env.EMBEDDING_PROVIDER || 'local-hash').toLowerCase();
-const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'rpar-local-embedding-v1';
+const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'mendly-local-embedding-v1';
 const EMBEDDING_DIMENSION = Number(process.env.EMBEDDING_DIMENSION || 1536);
 
 class LocalHashEmbeddings extends Embeddings {
     constructor(fields = {}) {
         super(fields);
         this.dimension = fields.dimension || 1536;
-        this.model = fields.model || 'rpar-local-embedding-v1';
+        this.model = fields.model || 'mendly-local-embedding-v1';
     }
 
     async embedDocuments(texts) {
@@ -122,7 +122,7 @@ export async function initializeVectorStore() {
         const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
         vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
             pineconeIndex,
-            namespace: "rpar",
+            namespace: "mendly",
         });
         console.log("Vector store initialized successfully");
         return vectorStore;
@@ -177,15 +177,15 @@ export async function indexTheDocument(filePath) {
     console.log(`Successfully indexed documents from ${filePath}`);
 }
 
-export async function indexRPARDocumentation() {
-    const docPath = path.resolve(process.cwd(), 'docs', 'rpar-documentation.txt');
+export async function indexMendlyDocumentation() {
+    const docPath = path.resolve(process.cwd(), 'docs', 'mendly-documentation.txt');
     try {
         const pinecone = getPineconeClient();
-        await pinecone.Index(process.env.PINECONE_INDEX_NAME).namespace("rpar").deleteAll();
+        await pinecone.Index(process.env.PINECONE_INDEX_NAME).namespace("mendly").deleteAll();
         await indexTheDocument(docPath);
-        console.log('RPAR documentation indexed successfully');
+        console.log('Mendly documentation indexed successfully');
     } catch (error) {
-        console.error('Error indexing RPAR documentation:', error.message);
+        console.error('Error indexing Mendly documentation:', error.message);
     }
 }
 

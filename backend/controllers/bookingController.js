@@ -103,7 +103,7 @@ export const createBooking = asyncHandler(async (req, res) => {
         checkout: buildRazorpayCheckoutPayload({
             razorpayOrder,
             publicConfig: getRazorpayPublicConfig(),
-            entityName: "RPAR Booking",
+            entityName: "Mendly Booking",
         }),
     });
 });

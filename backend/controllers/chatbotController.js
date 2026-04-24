@@ -1,5 +1,5 @@
 import { getGroqResponse, testGroqConnection } from '../utils/groqChat.js';
-import { indexRPARDocumentation } from '../utils/prepare.js';
+import { indexMendlyDocumentation } from '../utils/prepare.js';
 import apiResponse from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -155,14 +155,14 @@ export const startNewConversation = asyncHandler(async (req, res) => {
 });
 
 /**
- * Index RPAR documentation into vector store
+ * Index Mendly documentation into vector store
  */
 export const indexDocumentation = asyncHandler(async (req, res) => {
     try {
-        await indexRPARDocumentation();
+        await indexMendlyDocumentation();
 
         return res.status(200).json(
-            apiResponse(200, 'RPAR documentation indexed successfully')
+            apiResponse(200, 'Mendly documentation indexed successfully')
         );
     } catch (error) {
         console.error('Error indexing documentation:', error);

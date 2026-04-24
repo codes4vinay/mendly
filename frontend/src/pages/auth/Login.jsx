@@ -77,7 +77,7 @@ const Login = () => {
             <div className="bg-indigo-600 p-2 rounded-xl">
               <Wrench className="h-6 w-6 text-white" />
             </div>
-            <span className="font-bold text-2xl text-indigo-600">RPAR</span>
+            <span className="font-bold text-2xl text-indigo-600">Mendly</span>
           </Link>
         </div>
 
