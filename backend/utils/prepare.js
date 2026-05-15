@@ -16,14 +16,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let vectorStore = null;
 
 const EMBEDDING_PROVIDER = (process.env.EMBEDDING_PROVIDER || 'local-hash').toLowerCase();
-const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'RPAR-local-embedding-v1';
+const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'rpar-local-embedding-v1';
 const EMBEDDING_DIMENSION = Number(process.env.EMBEDDING_DIMENSION || 1536);
 
 class LocalHashEmbeddings extends Embeddings {
     constructor(fields = {}) {
         super(fields);
         this.dimension = fields.dimension || 1536;
-        this.model = fields.model || 'RPAR-local-embedding-v1';
+        this.model = fields.model || 'rpar-local-embedding-v1';
     }
 
     async embedDocuments(texts) {
@@ -178,7 +178,7 @@ export async function indexTheDocument(filePath) {
 }
 
 export async function indexRPARDocumentation() {
-    const docPath = path.resolve(process.cwd(), 'docs', 'RPAR-documentation.txt');
+    const docPath = path.resolve(process.cwd(), 'docs', 'rpar-documentation.txt');
     try {
         const pinecone = getPineconeClient();
         await pinecone.Index(process.env.PINECONE_INDEX_NAME).namespace("RPAR").deleteAll();

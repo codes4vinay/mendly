@@ -72,7 +72,7 @@ By leveraging technology, RPAR enhances the repair experience for both users and
 ## 📁 Project Structure
 
 ```
-RPAR/
+rpar/
 ├── frontend/                    # React frontend application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -113,8 +113,8 @@ RPAR/
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/RPAR.git
-cd RPAR
+git clone https://github.com/yourusername/mendly.git
+cd mendly
 ```
 
 **2. Backend Setup**
@@ -150,7 +150,7 @@ The application will be available at:
 # Server
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/RPAR
+MONGO_URI=mongodb://localhost:27017/rpar
 
 # Authentication
 ACCESS_TOKEN_SECRET=your_secret_key
@@ -165,17 +165,17 @@ CLOUDINARY_API_KEY=your_api_key
 # AI & Chatbot
 GROQ_API_KEY=your_groq_api_key
 EMBEDDING_PROVIDER=local-hash
-EMBEDDING_MODEL=RPAR-local-embedding-v1
+EMBEDDING_MODEL=rpar-local-embedding-v1
 EMBEDDING_DIMENSION=1536
-PINECONE_API_KEY=your_pinecone_key
-PINECONE_INDEX_NAME=RPAR-chatbot-index
+PINCONE_API_KEY=your_pinecone_key
+PINCONE_INDEX_NAME=rpar-chatbot-index
 
 # Email
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 ```
 
-If you are switching from Azure embeddings to the local `RPAR-local-embedding-v1` setup, make sure your Pinecone index dimension matches `1536`. If your old index or namespace was created for earlier embeddings, re-index the chatbot documentation after restarting the backend.
+If you are switching from Azure embeddings to the local `rpar-local-embedding-v1` setup, make sure your Pinecone index dimension matches `1536`. If your old index or namespace was created for earlier embeddings, re-index the chatbot documentation after restarting the backend.
 
 ---
 
@@ -201,7 +201,7 @@ If you are switching from Azure embeddings to the local `RPAR-local-embedding-v1
 - `POST /api/chatbot/message` - Send message
 - `GET /api/chatbot/conversation/:id` - Get conversation history
 
-For complete API documentation, see [backend/docs/RPAR-documentation.txt](backend/docs/RPAR-documentation.txt)
+For complete API documentation, see [backend/docs/rpar-documentation.txt](backend/docs/rpar-documentation.txt)
 
 ---
 
@@ -234,7 +234,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Support
 
-For support, email us at **vinay@vinaydev.in** or visit our website at **RPAR.vinaydev.in**
+For support, email us at **vinay@vinaydev.in** or visit our website at **mendly.vinaydev.in**
 
 ---
 

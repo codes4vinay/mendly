@@ -6,8 +6,8 @@ const contactItems = [
   {
     icon: Mail,
     title: "Email",
-    value: "support@RPAR.in",
-    href: "mailto:support@RPAR.in",
+    value: "support@rpar.in",
+    href: "mailto:support@rpar.in",
   },
   {
     icon: Phone,

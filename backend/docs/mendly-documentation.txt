@@ -6,8 +6,8 @@ RPAR - SERVICE PLATFORM DOCUMENTATION
 
 RPAR is a comprehensive service booking and management platform that connects service providers with users who need services. The platform includes booking management, payments, real-time chat, notifications, and a review system.
 
-Web URL: www.RPAR.com
-Customer Support Email: support@RPAR.com
+Web URL: www.rpar.com
+Customer Support Email: support@rpar.com
 
 ================================
 2. KEY FEATURES
@@ -141,7 +141,7 @@ Customer Support Email: support@RPAR.com
 - Customize notification preferences
 
 6.3 CONTACT US
-- Email: support@RPAR.com
+- Email: support@rpar.com
 - In-app support ticketing system
 - Live chat with support team (business hours)
 - Response time: 24-48 hours
@@ -237,7 +237,7 @@ Service categories include:
 - Try incognito/private browsing mode
 
 10.3 REPORT BUGS
-- Email with detailed description to support@RPAR.com
+- Email with detailed description to support@rpar.com
 - Include screenshots and browser information
 - Provide reproduction steps
 - Bug bounty program available
@@ -307,13 +307,13 @@ A: Yes, available on iOS and Android via app stores
 13. CONTACT & SUPPORT CHANNELS
 ================================
 
-Email: support@RPAR.com
-Website: www.RPAR.com
+Email: support@rpar.com
+Website: www.rpar.com
 Mobile App: Available on iOS and Android
 Operating Hours: 9 AM - 6 PM (IST)
 Language Support: English, Hindi, Regional Languages
 
 ================================
 
-For latest updates and announcements, visit www.RPAR.com/updates
+For latest updates and announcements, visit www.rpar.com/updates
 Thank you for using RPAR!
