@@ -110,7 +110,7 @@ const ServiceDetail = () => {
     try {
       const uploadedDevicePhotos = await uploadImages(
         devicePhotos,
-        "mendly/device-photos",
+        "RPAR/device-photos",
       );
       const res = await api.post("/bookings", {
         service: service._id,
@@ -139,7 +139,10 @@ const ServiceDetail = () => {
           },
         });
 
-        await api.post(`/bookings/${data.booking._id}/verify-payment`, paymentPayload);
+        await api.post(
+          `/bookings/${data.booking._id}/verify-payment`,
+          paymentPayload,
+        );
       }
 
       toast.success(
@@ -149,7 +152,9 @@ const ServiceDetail = () => {
       );
       navigate("/my-bookings");
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Booking failed");
+      toast.error(
+        error.response?.data?.message || error.message || "Booking failed",
+      );
     } finally {
       setBooking(false);
     }
@@ -522,10 +527,14 @@ const ServiceDetail = () => {
                   {booking ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      {paymentMethod === "cash" ? "Booking..." : "Processing..."}
+                      {paymentMethod === "cash"
+                        ? "Booking..."
+                        : "Processing..."}
                     </>
+                  ) : paymentMethod === "cash" ? (
+                    "Book Now"
                   ) : (
-                    paymentMethod === "cash" ? "Book Now" : "Pay & Book"
+                    "Pay & Book"
                   )}
                 </Button>
 

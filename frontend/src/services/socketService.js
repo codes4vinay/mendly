@@ -4,7 +4,7 @@ let socket = null;
 const serverUrl = import.meta.env.VITE_SOCKET_SERVER_URL
     || (import.meta.env.DEV
         ? "http://localhost:5000"
-        : "https://mendly-backend-fnbdhxakadhvezet.centralindia-01.azurewebsites.net");
+        : "https://RPAR-backend-fnbdhxakadhvezet.centralindia-01.azurewebsites.net");
 
 /**
  * Initialize socket connection with authentication

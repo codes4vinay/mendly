@@ -38,7 +38,7 @@ export const openRazorpayCheckout = async ({
       key: checkout.key,
       amount: checkout.amount,
       currency: checkout.currency,
-      name: "Mendly",
+      name: "RPAR",
       description: checkout.entityName,
       order_id: checkout.razorpayOrderId,
       prefill,

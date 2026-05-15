@@ -24,7 +24,7 @@ const Checkout = () => {
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("mendly_cart");
+    const saved = localStorage.getItem("RPAR_cart");
     if (saved) {
       try {
         setCart(JSON.parse(saved));
@@ -39,7 +39,8 @@ const Checkout = () => {
     : cart;
 
   const subtotal = useMemo(
-    () => checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    () =>
+      checkoutItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [checkoutItems],
   );
 
@@ -101,7 +102,10 @@ const Checkout = () => {
             },
           });
 
-          await api.post(`/orders/${data.order._id}/verify-payment`, paymentPayload);
+          await api.post(
+            `/orders/${data.order._id}/verify-payment`,
+            paymentPayload,
+          );
         }
 
         successfulProductIds.push(...group.items.map((item) => item.productId));
@@ -110,7 +114,7 @@ const Checkout = () => {
           const remainingCart = cart.filter(
             (item) => !successfulProductIds.includes(item.productId),
           );
-          localStorage.setItem("mendly_cart", JSON.stringify(remainingCart));
+          localStorage.setItem("RPAR_cart", JSON.stringify(remainingCart));
           setCart(remainingCart);
         }
       }
@@ -122,7 +126,9 @@ const Checkout = () => {
       );
       navigate("/my-orders");
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message || "Checkout failed");
+      toast.error(
+        error.response?.data?.message || error.message || "Checkout failed",
+      );
     } finally {
       setLoading(false);
     }
@@ -221,7 +227,9 @@ const Checkout = () => {
             <CardContent className="space-y-3">
               <h2 className="text-lg font-semibold">Order Summary</h2>
               <div className="space-y-2">
-                <label className="block text-sm font-medium">Payment Method</label>
+                <label className="block text-sm font-medium">
+                  Payment Method
+                </label>
                 <select
                   className="w-full rounded-md border border-slate-300 px-3 py-2 bg-background"
                   value={paymentMethod}

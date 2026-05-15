@@ -6,8 +6,8 @@ const contactItems = [
   {
     icon: Mail,
     title: "Email",
-    value: "support@mendly.in",
-    href: "mailto:support@mendly.in",
+    value: "support@RPAR.in",
+    href: "mailto:support@RPAR.in",
   },
   {
     icon: Phone,
@@ -30,7 +30,7 @@ const Contact = () => {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-600">
             Contact
           </p>
-          <h1 className="text-4xl font-bold mt-4">Get in touch with Mendly</h1>
+          <h1 className="text-4xl font-bold mt-4">Get in touch with RPAR</h1>
           <p className="text-muted-foreground text-lg mt-6">
             Questions, feedback, partnership ideas, or support requests: reach
             out and we will point you in the right direction.
@@ -54,7 +54,9 @@ const Contact = () => {
                       {item.value}
                     </a>
                   ) : (
-                    <p className="text-sm text-muted-foreground">{item.value}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.value}
+                    </p>
                   )}
                 </div>
               </CardContent>

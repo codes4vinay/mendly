@@ -1,7 +1,7 @@
 const defaultOrigins = [
-    "https://mendly-eight.vercel.app",
-    "https://mendly.vinaydev.in",
-    "https://www.mendly.vinaydev.in",
+    "https://RPAR-eight.vercel.app",
+    "https://RPAR.vinaydev.in",
+    "https://www.RPAR.vinaydev.in",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ];

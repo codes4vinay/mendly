@@ -110,7 +110,7 @@ const ManageProducts = () => {
   const onSubmit = async (data) => {
     setSaving(true);
     try {
-      const uploadedPhotos = await uploadImages(newPhotos, "mendly/products");
+      const uploadedPhotos = await uploadImages(newPhotos, "RPAR/products");
       const payload = {
         ...data,
         photos: [...existingPhotos, ...uploadedPhotos],
@@ -185,20 +185,20 @@ const ManageProducts = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                >
-                  <Card className="hover:shadow-md transition-shadow overflow-hidden">
-                    <div className="h-40 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
-                      {product.photos?.[0] ? (
-                        <img
-                          src={product.photos[0]}
-                          alt={product.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Package className="h-10 w-10 text-muted-foreground opacity-40" />
-                      )}
-                    </div>
-                    <CardContent className="p-4">
+              >
+                <Card className="hover:shadow-md transition-shadow overflow-hidden">
+                  <div className="h-40 bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                    {product.photos?.[0] ? (
+                      <img
+                        src={product.photos[0]}
+                        alt={product.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Package className="h-10 w-10 text-muted-foreground opacity-40" />
+                    )}
+                  </div>
+                  <CardContent className="p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary" className="text-xs">
                         {product.category?.replace(/_/g, " ")}
