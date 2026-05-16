@@ -5,7 +5,7 @@
 In today's fast-paced world, finding reliable and efficient repair services for everyday items—whether electronics, appliances, or other utilities—is a challenge. Users often face issues like:
 
 - ❌ Unverified service providers
-- ❌ Inconsistent pricing
+- ❌ Inconsistent pricing of repairs
 - ❌ Lack of transparency
 - ❌ Poor service tracking
 - ❌ Limited options and communication
