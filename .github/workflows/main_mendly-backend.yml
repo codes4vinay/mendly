@@ -26,7 +26,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'RPAR-backend'
+          app-name: 'mendly-backend'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
           package: ./backend
