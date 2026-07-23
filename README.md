@@ -201,7 +201,7 @@ If you are switching from Azure embeddings to the local `rpar-local-embedding-v1
 - `POST /api/chatbot/message` - Send message
 - `GET /api/chatbot/conversation/:id` - Get conversation history
 
-For complete API documentation, see [backend/docs/rpar-documentation.txt](backend/docs/rpar-documentation.txt)
+For complete API documentation, see [backend/docs/mendly-documentation.txt](backend/docs/mendly-documentation.txt)
 
 ---
 

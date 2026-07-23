@@ -178,14 +178,14 @@ export async function indexTheDocument(filePath) {
 }
 
 export async function indexRPARDocumentation() {
-    const docPath = path.resolve(process.cwd(), 'docs', 'rpar-documentation.txt');
+    const docPath = path.resolve(process.cwd(), 'docs', 'mendly-documentation.txt');
     try {
         const pinecone = getPineconeClient();
         await pinecone.Index(process.env.PINECONE_INDEX_NAME).namespace("RPAR").deleteAll();
         await indexTheDocument(docPath);
-        console.log('RPAR documentation indexed successfully');
+        console.log('Mendly documentation indexed successfully');
     } catch (error) {
-        console.error('Error indexing RPAR documentation:', error.message);
+        console.error('Error indexing Mendly documentation:', error.message);
     }
 }
 
