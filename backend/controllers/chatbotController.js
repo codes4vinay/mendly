@@ -155,14 +155,14 @@ export const startNewConversation = asyncHandler(async (req, res) => {
 });
 
 /**
- * Index RPAR documentation into vector store
+ * Index Mendly documentation into vector store
  */
 export const indexDocumentation = asyncHandler(async (req, res) => {
     try {
         await indexRPARDocumentation();
 
         return res.status(200).json(
-            apiResponse(200, 'RPAR documentation indexed successfully')
+            apiResponse(200, 'Mendly documentation indexed successfully')
         );
     } catch (error) {
         console.error('Error indexing documentation:', error);

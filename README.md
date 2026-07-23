@@ -1,4 +1,4 @@
-# RPAR - Repair Services Platform
+# Mendly - Repair Services Platform
 
 ## 🎯 Problem Statement
 
@@ -12,9 +12,9 @@ In today's fast-paced world, finding reliable and efficient repair services for 
 
 ## 💡 Solution
 
-**RPAR** bridges this gap by creating a one-stop digital platform that connects users with verified repair professionals, ensuring trust, efficiency, and convenience. The platform streamlines the repair process, enabling customers to book services, track progress, and provide feedback, while service providers gain access to a broader customer base.
+**Mendly** bridges this gap by creating a one-stop digital platform that connects users with verified repair professionals, ensuring trust, efficiency, and convenience. The platform streamlines the repair process, enabling customers to book services, track progress, and provide feedback, while service providers gain access to a broader customer base.
 
-By leveraging technology, RPAR enhances the repair experience for both users and service providers, fostering a community of trust and reliability in the repair industry.
+By leveraging technology, Mendly enhances the repair experience for both users and service providers, fostering a community of trust and reliability in the repair industry.
 
 ---
 
@@ -28,7 +28,7 @@ By leveraging technology, RPAR enhances the repair experience for both users and
 - 📝 **Order Tracking** - Real-time service status updates
 - ⭐ **Reviews & Ratings** - Verified customer feedback
 - 💬 **Live Chat** - Connect with service providers
-- 🤖 **AI Assistant** - 24/7 RPAR chatbot for support
+- 🤖 **AI Assistant** - 24/7 Mendly chatbot for support
 
 ### For Service Providers
 
@@ -72,7 +72,7 @@ By leveraging technology, RPAR enhances the repair experience for both users and
 ## 📁 Project Structure
 
 ```
-rpar/
+mendly/
 ├── frontend/                    # React frontend application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
@@ -150,7 +150,7 @@ The application will be available at:
 # Server
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/rpar
+MONGO_URI=mongodb://localhost:27017/mendly
 
 # Authentication
 ACCESS_TOKEN_SECRET=your_secret_key
@@ -244,4 +244,4 @@ Built with ❤️ by Vinay Kumar
 
 ---
 
-**Last Updated:** April 2, 2026
+**Last Updated:** July 23, 2026

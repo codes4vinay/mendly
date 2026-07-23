@@ -30,7 +30,7 @@ export const ChatbotConversation = ({
     <div className="chatbot-conversation">
       {/* Header */}
       <div className="chatbot-header">
-        <h3>RPAR Assistant</h3>
+        <h3>Mendly Assistant</h3>
         <button
           className="clear-btn"
           onClick={onClearChat}
@@ -46,7 +46,7 @@ export const ChatbotConversation = ({
           <div className="empty-state">
             <div className="greeting-icon">💬</div>
             <h4>Start a Conversation</h4>
-            <p>Ask me anything about RPAR</p>
+            <p>Ask me anything about Mendly</p>
           </div>
         )}
 
@@ -61,7 +61,7 @@ export const ChatbotConversation = ({
         {loading && (
           <div className="loading-indicator">
             <div className="spinner"></div>
-            <p>RPAR is thinking...</p>
+            <p>Mendly is thinking...</p>
           </div>
         )}
 
