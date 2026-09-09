@@ -38,6 +38,29 @@ const blockedPatterns = [
     /hack\s+(into|account|server|database)|steal\s+(data|account|password|credentials)/i,
 ];
 
+const DEPRECATED_MODELS = new Set([
+    'llama-3.3-70b-versatile',
+    'llama-3.1-70b-versatile',
+    'llama3-70b-8192',
+    'llama3-8b-8192',
+]);
+
+const DEFAULT_MODELS = [
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+];
+
+function getCandidateModels() {
+    const configured = (process.env.GROQ_MODEL || '').trim();
+    const candidates = [];
+
+    if (configured && !DEPRECATED_MODELS.has(configured)) {
+        candidates.push(configured);
+    }
+    candidates.push(...DEFAULT_MODELS);
+    return [...new Set(candidates)];
+}
+
 function isBlockedRequest(message) {
     return blockedPatterns.some((pattern) => pattern.test(message || ''));
 }
@@ -70,13 +93,31 @@ export async function getGroqResponse(userMessage, conversationHistory = []) {
             },
         ];
 
-        // Call Groq API
-        const completion = await groq.chat.completions.create({
-            messages: messages,
-            model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-            temperature: 0.7,
-            max_tokens: 1024,
-        });
+        const models = getCandidateModels();
+        let lastError = null;
+        let completion = null;
+
+        for (const model of models) {
+            try {
+                completion = await groq.chat.completions.create({
+                    messages: messages,
+                    model: model,
+                    temperature: 0.7,
+                    max_tokens: 1024,
+                });
+
+                if (completion?.choices?.[0]?.message?.content) {
+                    break;
+                }
+            } catch (err) {
+                lastError = err;
+                console.warn(`Groq model "${model}" failed: ${err.message}. Trying next candidate if available...`);
+            }
+        }
+
+        if (!completion) {
+            throw lastError || new Error('Failed to get response from Groq models');
+        }
 
         const assistantMessage = completion.choices[0].message.content;
 
@@ -95,25 +136,32 @@ export async function getGroqResponse(userMessage, conversationHistory = []) {
 }
 
 export async function testGroqConnection() {
-    try {
-        const completion = await groq.chat.completions.create({
-            messages: [
-                {
-                    role: 'user',
-                    content: 'Say hello',
-                },
-            ],
-            model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
-        });
+    const models = getCandidateModels();
+    let lastError = null;
 
-        return {
-            success: true,
-            message: 'Groq connection successful',
-        };
-    } catch (error) {
-        return {
-            success: false,
-            error: error.message,
-        };
+    for (const model of models) {
+        try {
+            await groq.chat.completions.create({
+                messages: [
+                    {
+                        role: 'user',
+                        content: 'Say hello',
+                    },
+                ],
+                model: model,
+            });
+
+            return {
+                success: true,
+                message: `Groq connection successful with model ${model}`,
+            };
+        } catch (error) {
+            lastError = error;
+        }
     }
+
+    return {
+        success: false,
+        error: lastError?.message || 'Failed to connect to Groq',
+    };
 }

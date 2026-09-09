@@ -15,8 +15,12 @@ const startServer = async () => {
     try {
         await connectDB();           // wait for DB before accepting requests
 
-        const server = app.listen(PORT, () => {
+        const server = app.listen(PORT, "0.0.0.0", () => {
             console.log(`Server running on port ${PORT} [${process.env.NODE_ENV}]`);
+        });
+
+        server.on("error", (err) => {
+            console.error("HTTP Server Error:", err);
         });
 
         // ─── Initialize Socket.IO ─────────────────────────────────

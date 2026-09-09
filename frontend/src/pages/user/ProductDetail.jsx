@@ -140,23 +140,23 @@ const ProductDetail = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 md:py-10">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="mb-6 gap-2"
+          className="mb-4 sm:mb-6 gap-2"
         >
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* ─── Left: Product Info ─────────────────────── */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5 sm:space-y-6">
             <div className="space-y-3">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="relative flex min-h-[300px] items-center justify-center overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/60 sm:min-h-[360px] lg:min-h-[420px]"
+                className="relative flex min-h-[250px] items-center justify-center overflow-hidden rounded-2xl sm:rounded-3xl border border-border/60 bg-gradient-to-br from-slate-50 via-white to-emerald-50 dark:from-slate-950 dark:via-slate-950 dark:to-emerald-950/60 sm:min-h-[340px] lg:min-h-[420px]"
               >
                 {activePhoto ? (
                   <>
@@ -164,10 +164,10 @@ const ProductDetail = () => {
                     <img
                       src={activePhoto}
                       alt={product.name}
-                      className="relative z-10 max-h-[390px] w-full object-contain p-4 sm:max-h-[440px] sm:p-6"
+                      className="relative z-10 max-h-[300px] w-full object-contain p-3 sm:max-h-[400px] sm:p-6"
                     />
                     {photos.length > 1 && (
-                      <div className="absolute bottom-4 right-4 rounded-full bg-black/65 px-3 py-1 text-xs font-medium text-white backdrop-blur">
+                      <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 rounded-full bg-black/65 px-2.5 py-0.5 sm:px-3 sm:py-1 text-xs font-medium text-white backdrop-blur">
                         {selectedPhoto + 1} / {photos.length}
                       </div>
                     )}
@@ -183,13 +183,13 @@ const ProductDetail = () => {
               </motion.div>
 
               {photos.length > 1 && (
-                <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:grid sm:grid-cols-4 md:grid-cols-5 sm:gap-3">
                   {photos.map((photo, index) => (
                     <button
                       key={`${photo}-${index}`}
                       type="button"
                       onClick={() => setSelectedPhoto(index)}
-                      className={`overflow-hidden rounded-2xl border bg-slate-50 transition-all dark:bg-slate-950 ${
+                      className={`shrink-0 w-16 h-16 sm:w-auto sm:h-20 md:h-24 overflow-hidden rounded-xl sm:rounded-2xl border bg-slate-50 transition-all dark:bg-slate-950 ${
                         selectedPhoto === index
                           ? "border-emerald-500 ring-2 ring-emerald-500/20"
                           : "border-border/60 hover:border-emerald-300"
@@ -198,7 +198,7 @@ const ProductDetail = () => {
                       <img
                         src={photo}
                         alt={`${product.name} view ${index + 1}`}
-                        className="h-20 w-full object-cover sm:h-24"
+                        className="h-full w-full object-cover"
                       />
                     </button>
                   ))}
@@ -207,9 +207,9 @@ const ProductDetail = () => {
             </div>
 
             <div>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2 flex-wrap">
                     <Badge variant="secondary">
                       {product.category?.replace(/_/g, " ")}
                     </Badge>
@@ -223,13 +223,15 @@ const ProductDetail = () => {
                       {product.condition?.replace(/_/g, " ")}
                     </Badge>
                   </div>
-                  <h1 className="text-3xl font-bold">{product.name}</h1>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground break-words leading-snug">
+                    {product.name}
+                  </h1>
                 </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-green-600">
+                <div className="sm:text-right shrink-0 flex items-baseline sm:flex-col gap-2 sm:gap-0 pt-1 sm:pt-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">
                     {formatPrice(product.price)}
                   </p>
-                  <p className="text-sm text-muted-foreground">per unit</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">per unit</p>
                 </div>
               </div>
 

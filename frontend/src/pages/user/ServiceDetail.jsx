@@ -175,39 +175,49 @@ const ServiceDetail = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 md:py-10">
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="mb-6 gap-2"
+          className="mb-4 sm:mb-6 gap-2"
         >
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* ─── Left: Service Info ─────────────────────── */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-5 sm:space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="h-64 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 rounded-2xl flex items-center justify-center"
+              className="h-52 sm:h-72 md:h-80 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 rounded-2xl flex items-center justify-center overflow-hidden shadow-sm"
             >
-              <Wrench className="h-20 w-20 text-indigo-300" />
+              {service.photos?.find(Boolean) ? (
+                <img
+                  src={service.photos.find(Boolean)}
+                  alt={service.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Wrench className="h-16 w-16 sm:h-20 sm:w-20 text-indigo-300" />
+              )}
             </motion.div>
 
             <div>
-              <div className="flex items-start justify-between gap-4">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-6">
+                <div className="flex-1 min-w-0">
                   <Badge variant="secondary" className="mb-2">
                     {service.category?.replace(/_/g, " ")}
                   </Badge>
-                  <h1 className="text-3xl font-bold">{service.name}</h1>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground break-words leading-snug">
+                    {service.name}
+                  </h1>
                 </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-indigo-600">
+                <div className="sm:text-right shrink-0 flex items-baseline sm:flex-col gap-2 sm:gap-0 pt-1 sm:pt-0">
+                  <p className="text-2xl sm:text-3xl font-bold text-indigo-600 dark:text-indigo-400">
                     {formatPrice(service.price)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {service.priceType}
                   </p>
                 </div>

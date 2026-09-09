@@ -164,6 +164,7 @@ CLOUDINARY_API_KEY=your_api_key
 
 # AI & Chatbot
 GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
 EMBEDDING_PROVIDER=local-hash
 EMBEDDING_MODEL=rpar-local-embedding-v1
 EMBEDDING_DIMENSION=1536

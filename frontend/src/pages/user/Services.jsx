@@ -187,8 +187,16 @@ const Services = () => {
                     className="cursor-pointer hover:shadow-lg transition-all overflow-hidden h-full"
                     onClick={() => navigate(`/services/${service._id}`)}
                   >
-                    <div className="h-44 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 flex items-center justify-center">
-                      <Wrench className="h-14 w-14 text-indigo-300" />
+                    <div className="h-44 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 flex items-center justify-center overflow-hidden">
+                      {service.photos?.find(Boolean) ? (
+                        <img
+                          src={service.photos.find(Boolean)}
+                          alt={service.name}
+                          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      ) : (
+                        <Wrench className="h-14 w-14 text-indigo-300" />
+                      )}
                     </div>
                     <CardContent className="p-4">
                       <Badge variant="secondary" className="text-xs mb-2">
