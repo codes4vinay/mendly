@@ -1,30 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./ChatbotGreetingPopup.css";
 
 export const ChatbotGreetingPopup = () => {
   const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
-    // Show message after 1 second (every time user visits/refreshes)
-    const timer = setTimeout(() => {
-      setShowMessage(true);
-    }, 1000);
+    const timer = setTimeout(() => setShowMessage(true), 1200);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleClose = () => {
-    setShowMessage(false);
-  };
 
   if (!showMessage) return null;
 
   return (
     <div className="chatbot-simple-message">
-      <span className="message-icon">💬</span>
-      <span className="message-text">How can I help you?</span>
-      <button className="message-close" onClick={handleClose}>
-        ✕
+      <span className="message-icon" aria-hidden="true">●</span>
+      <button className="message-text" onClick={() => {
+        window.dispatchEvent(new Event("openChatbot"));
+        setShowMessage(false);
+      }}>
+        Track, repair, resolve — we’re here.
       </button>
+      <button className="message-close" onClick={() => setShowMessage(false)} aria-label="Dismiss support message">×</button>
     </div>
   );
 };

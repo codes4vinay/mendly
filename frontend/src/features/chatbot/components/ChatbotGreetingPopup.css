@@ -46,6 +46,12 @@
 }
 
 .message-text {
+    appearance: none;
+    padding: 0;
+    border: 0;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
     font-size: 15px;
     color: white;
     font-weight: 600;

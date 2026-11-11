@@ -5,17 +5,19 @@ import Product from "../models/Product.js";
 import Booking from "../models/Booking.js";
 import Order from "../models/Order.js";
 import Review from "../models/Review.js";
+import SupportTicket from "../models/SupportTicket.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiError from "../utils/apiError.js";
 import apiResponse from "../utils/apiResponse.js";
 
 // ─── Dashboard Stats ──────────────────────────────────────────
 export const getDashboardStats = asyncHandler(async (req, res) => {
-    const [totalUsers, totalCentres, totalBookings, totalOrders] = await Promise.all([
+    const [totalUsers, totalCentres, totalBookings, totalOrders, openSupportTickets] = await Promise.all([
         User.countDocuments(),
         ServiceCentre.countDocuments(),
         Booking.countDocuments(),
         Order.countDocuments(),
+        SupportTicket.countDocuments({ status: { $in: ["open", "in_progress", "waiting_on_customer"] } }),
     ]);
 
     return apiResponse(res, 200, "Stats fetched successfully", {
@@ -23,6 +25,7 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
         totalCentres,
         totalBookings,
         totalOrders,
+        openSupportTickets,
     });
 });
 

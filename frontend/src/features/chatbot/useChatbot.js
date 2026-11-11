@@ -1,144 +1,135 @@
-import { useCallback, useState } from 'react';
-import API from '../../services/axios';
+import { useCallback, useState } from "react";
+import api from "../../utils/axios";
 
 export const useChatbot = () => {
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [conversationId, setConversationId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [conversationId, setConversationId] = useState(null);
+  const [supportContext, setSupportContext] = useState(null);
 
-    // Start a new conversation
-    const startConversation = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await API.post('/chatbot/new');
-            const newConversationId = response.data.data.conversationId;
-            setConversationId(newConversationId);
-            setMessages([]); // Clear messages for new conversation
-            return newConversationId;
-        } catch (err) {
-            const errorMessage = err.response?.data?.message || 'Failed to start conversation';
-            setError(errorMessage);
-            console.error('Error starting conversation:', err);
-            return null;
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  const startConversation = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/chatbot/new");
+      const data = response.data.data;
+      setConversationId(data.conversationId);
+      setMessages(data.messages || []);
+      return data.conversationId;
+    } catch (err) {
+      setError(err.response?.data?.message || "Support is temporarily unavailable");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    // Send message to chatbot
-    const sendMessage = useCallback(
-        async (message) => {
-            if (!message.trim() || !conversationId) {
-                setError('Please start a conversation first');
-                return null;
-            }
+  const loadContext = useCallback(async () => {
+    try {
+      const response = await api.get("/chatbot/context");
+      setSupportContext(response.data.data);
+      return response.data.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Could not load your support details");
+      return null;
+    }
+  }, []);
 
-            try {
-                setLoading(true);
-                setError(null);
-
-                // Add user message to UI immediately
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: 'user',
-                        content: message,
-                        timestamp: new Date(),
-                    },
-                ]);
-
-                // Send to API
-                const response = await API.post('/chatbot/message', {
-                    message,
-                    conversationId,
-                });
-
-                const botResponse = response.data.data.response;
-
-                // Add bot response to UI
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: 'assistant',
-                        content: botResponse,
-                        timestamp: new Date(),
-                    },
-                ]);
-
-                return botResponse;
-            } catch (err) {
-                const errorMessage = err.response?.data?.message || 'Failed to send message';
-                setError(errorMessage);
-                console.error('Error sending message:', err);
-
-                // Remove the user message if request failed
-                setMessages((prev) => prev.slice(0, -1));
-                return null;
-            } finally {
-                setLoading(false);
-            }
-        },
-        [conversationId]
-    );
-
-    // Get conversation history
-    const getConversationHistory = useCallback(async () => {
-        if (!conversationId) {
-            setError('No active conversation');
-            return null;
-        }
-
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await API.get(`/chatbot/conversation/${conversationId}`);
-            const history = response.data.data.messages;
-            setMessages(history);
-            return history;
-        } catch (err) {
-            const errorMessage = err.response?.data?.message || 'Failed to fetch conversation';
-            setError(errorMessage);
-            console.error('Error fetching conversation:', err);
-            return null;
-        } finally {
-            setLoading(false);
-        }
-    }, [conversationId]);
-
-    // Clear conversation
-    const clearConversation = useCallback(async () => {
-        if (!conversationId) {
-            return;
-        }
-
-        try {
-            setLoading(true);
-            setError(null);
-            await API.delete(`/chatbot/conversation/${conversationId}`);
-            const newConversationId = await startConversation();
-            return newConversationId;
-        } catch (err) {
-            const errorMessage = err.response?.data?.message || 'Failed to clear conversation';
-            setError(errorMessage);
-            console.error('Error clearing conversation:', err);
-            return null;
-        } finally {
-            setLoading(false);
-        }
-    }, [conversationId, startConversation]);
-
-    return {
-        messages,
-        loading,
-        error,
-        conversationId,
-        startConversation,
-        sendMessage,
-        getConversationHistory,
-        clearConversation,
-        setMessages,
-        setError,
+  const sendMessage = useCallback(async (message) => {
+    if (!message.trim() || !conversationId) return null;
+    const optimisticMessage = {
+      role: "user",
+      content: message.trim(),
+      createdAt: new Date().toISOString(),
     };
+    setMessages((current) => [...current, optimisticMessage]);
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/chatbot/message", {
+        message: message.trim(),
+        conversationId,
+      });
+      const data = response.data.data;
+      setMessages((current) => [...current, {
+        role: "assistant",
+        content: data.response,
+        intent: data.intent,
+        suggestedActions: data.suggestedActions || [],
+        createdAt: new Date().toISOString(),
+      }]);
+      return data;
+    } catch (err) {
+      setMessages((current) => current.filter((item) => item !== optimisticMessage));
+      setError(err.response?.data?.message || "Message could not be sent");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [conversationId]);
+
+  const createTicket = useCallback(async (payload) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/chatbot/tickets", payload);
+      await loadContext();
+      return response.data.data.ticket;
+    } catch (err) {
+      setError(err.response?.data?.message || "Support request could not be created");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [loadContext]);
+
+  const cancelResource = useCallback(async ({ resourceType, resourceId, reason }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.post("/chatbot/actions/cancel", {
+        resourceType,
+        resourceId,
+        reason,
+        confirmation: "CONFIRM_CANCEL",
+      });
+      await loadContext();
+      return response.data.data;
+    } catch (err) {
+      setError(err.response?.data?.message || "Cancellation could not be completed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [loadContext]);
+
+  const clearConversation = useCallback(async () => {
+    if (conversationId) await api.delete(`/chatbot/conversation/${conversationId}`);
+    setConversationId(null);
+    setMessages([]);
+    return startConversation();
+  }, [conversationId, startConversation]);
+
+  const resetLocalState = useCallback(() => {
+    setMessages([]);
+    setConversationId(null);
+    setSupportContext(null);
+    setError(null);
+  }, []);
+
+  return {
+    messages,
+    loading,
+    error,
+    conversationId,
+    supportContext,
+    startConversation,
+    loadContext,
+    sendMessage,
+    createTicket,
+    cancelResource,
+    clearConversation,
+    resetLocalState,
+  };
 };

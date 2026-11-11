@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   Star,
   MessageCircle,
+  LifeBuoy,
   User,
   Menu,
   X,
@@ -51,6 +52,7 @@ const adminNavItems = [
   { label: "Bookings", icon: CalendarCheck, path: "/admin/bookings" },
   { label: "Orders", icon: ShoppingBag, path: "/admin/orders" },
   { label: "Reviews", icon: Star, path: "/admin/reviews" },
+  { label: "Support", icon: LifeBuoy, path: "/admin/support" },
 ];
 
 const DashboardLayout = ({ children }) => {
@@ -67,7 +69,9 @@ const DashboardLayout = ({ children }) => {
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (e) {}
+    } catch {
+      // Local logout must still succeed if the server session already expired.
+    }
     dispatch(logout());
     toast.success("Logged out");
     navigate("/login");

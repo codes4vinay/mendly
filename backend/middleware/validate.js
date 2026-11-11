@@ -7,7 +7,8 @@ const validate = (schema) => (req, res, next) => {
 
     if (!result.success) {
         // pulls first error message from zod and sends it back
-        const message = result.error.errors[0].message;
+        const firstIssue = result.error.issues?.[0] || result.error.errors?.[0];
+        const message = firstIssue?.message || "Invalid request data";
         return next(new ApiError(400, message));
     }
 

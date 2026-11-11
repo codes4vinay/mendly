@@ -1,40 +1,65 @@
-import express from 'express';
+import express from "express";
+import authorize from "../middleware/authorize.js";
+import protect, { requireEmailVerified } from "../middleware/protect.js";
+import validate from "../middleware/validate.js";
+import { supportLimiter, supportWriteLimiter } from "../middleware/rateLimiter.js";
 import {
-    sendChatbotMessage,
-    getChatbotConversation,
-    startNewConversation,
-    indexDocumentation,
-    testGroqAPI,
+    cancelSupportResource,
     clearConversation,
-} from '../controllers/chatbotController.js';
+    createSupportTicket,
+    getAllSupportTickets,
+    getChatbotConversation,
+    getMySupportTicket,
+    getMySupportTickets,
+    getSupportContext,
+    sendChatbotMessage,
+    startNewConversation,
+    testGroqAPI,
+    updateSupportTicket,
+} from "../controllers/chatbotController.js";
+import {
+    cancelSupportResourceSchema,
+    createSupportTicketSchema,
+    sendSupportMessageSchema,
+    updateSupportTicketSchema,
+} from "../validators/chatbotValidators.js";
 
 const router = express.Router();
 
-/**
- * Public routes - No authentication required
- */
+router.use(protect, supportLimiter);
 
-// Start a new conversation
-router.post('/new', startNewConversation);
+router.post("/new", startNewConversation);
+router.post("/message", validate(sendSupportMessageSchema), sendChatbotMessage);
+router.get("/conversation/:conversationId", getChatbotConversation);
+router.delete("/conversation/:conversationId", clearConversation);
 
-// Send message to chatbot
-router.post('/message', sendChatbotMessage);
+router.get("/context", authorize("user"), getSupportContext);
+router.get("/tickets", authorize("user"), getMySupportTickets);
+router.get("/tickets/:id", authorize("user"), getMySupportTicket);
+router.post(
+    "/tickets",
+    requireEmailVerified,
+    authorize("user"),
+    supportWriteLimiter,
+    validate(createSupportTicketSchema),
+    createSupportTicket
+);
+router.post(
+    "/actions/cancel",
+    requireEmailVerified,
+    authorize("user"),
+    supportWriteLimiter,
+    validate(cancelSupportResourceSchema),
+    cancelSupportResource
+);
 
-// Get conversation history
-router.get('/conversation/:conversationId', getChatbotConversation);
-
-// Clear conversation
-router.delete('/conversation/:conversationId', clearConversation);
-
-/**
- * Admin routes - These should be protected with admin middleware
- * Uncomment and add protect/authorize middleware as needed
- */
-
-// Index documentation into vector store
-router.post('/admin/index-docs', indexDocumentation);
-
-// Test Groq API connection
-router.get('/admin/test-groq', testGroqAPI);
+router.get("/admin/tickets", authorize("admin"), getAllSupportTickets);
+router.put(
+    "/admin/tickets/:id",
+    authorize("admin"),
+    validate(updateSupportTicketSchema),
+    updateSupportTicket
+);
+router.get("/admin/test-ai", authorize("admin"), testGroqAPI);
 
 export default router;

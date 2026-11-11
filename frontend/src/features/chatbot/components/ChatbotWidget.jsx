@@ -1,6 +1,8 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleChatbot, setConversationId, openChatbot } from "../chatbotSlice";
+import { MessageCircle, X } from "lucide-react";
+import useAuth from "../../../hooks/useAuth";
+import { openChatbot, toggleChatbot } from "../chatbotSlice";
 import { useChatbot } from "../useChatbot";
 import ChatbotConversation from "./ChatbotConversation";
 import "./ChatbotWidget.css";
@@ -8,87 +10,53 @@ import "./ChatbotWidget.css";
 export const ChatbotWidget = () => {
   const dispatch = useDispatch();
   const { isOpen } = useSelector((state) => state.chatbot);
-
+  const { user, isAuthenticated, isUser } = useAuth();
+  const support = useChatbot();
   const {
-    messages,
-    loading,
-    error,
     conversationId,
+    supportContext,
+    resetLocalState,
     startConversation,
-    sendMessage,
-    clearConversation,
-  } = useChatbot();
+    loadContext,
+  } = support;
 
-  // Initialize conversation on component mount
   useEffect(() => {
-    if (!conversationId) {
-      startConversation().then((id) => {
-        if (id) {
-          dispatch(setConversationId(id));
-        }
-      });
+    if (!isAuthenticated) {
+      resetLocalState();
+      return;
     }
+    if (!conversationId) startConversation();
+    if (isUser && !supportContext) loadContext();
+  }, [isAuthenticated, isUser, conversationId, supportContext, resetLocalState, startConversation, loadContext]);
 
-    // Listen for greeting popup open event
-    const handleOpenChatbot = () => {
-      dispatch(openChatbot());
-    };
-
+  useEffect(() => {
+    const handleOpenChatbot = () => dispatch(openChatbot());
     window.addEventListener("openChatbot", handleOpenChatbot);
     return () => window.removeEventListener("openChatbot", handleOpenChatbot);
-  }, [conversationId, startConversation, dispatch]);
-
-  const handleToggle = () => {
-    if (!isOpen) {
-      dispatch(openChatbot());
-      // Ensure conversation is started
-      if (!conversationId) {
-        startConversation().then((id) => {
-          if (id) {
-            dispatch(setConversationId(id));
-          }
-        });
-      }
-    } else {
-      dispatch(toggleChatbot());
-    }
-  };
-
-  const handleSendMessage = async (message) => {
-    await sendMessage(message);
-  };
-
-  const handleClearChat = async () => {
-    await clearConversation();
-  };
+  }, [dispatch]);
 
   return (
     <>
-      {/* Floating Button */}
       <button
         className={`chatbot-toggle-btn ${isOpen ? "open" : ""}`}
-        onClick={handleToggle}
-        title="Chat with Mendly Assistant"
-        aria-label="Open Mendly Assistant"
+        onClick={() => dispatch(toggleChatbot())}
+        title={isOpen ? "Close Mendly Support" : "Open Mendly Support"}
+        aria-label={isOpen ? "Close Mendly Support" : "Open Mendly Support"}
+        aria-expanded={isOpen}
       >
-        {isOpen ? (
-          <span className="close-icon">✕</span>
-        ) : (
-          <span className="chat-icon">💬</span>
-        )}
+        {isOpen ? <X aria-hidden="true" /> : <MessageCircle aria-hidden="true" />}
+        {!isOpen && <span className="chatbot-online-dot" />}
       </button>
 
-      {/* Chat Window */}
       {isOpen && (
-        <div className="chatbot-widget-container">
+        <aside className="chatbot-widget-container" aria-label="Mendly customer support">
           <ChatbotConversation
-            messages={messages}
-            loading={loading}
-            error={error}
-            onSendMessage={handleSendMessage}
-            onClearChat={handleClearChat}
+            {...support}
+            user={user}
+            isAuthenticated={isAuthenticated}
+            isCustomer={isUser}
           />
-        </div>
+        </aside>
       )}
     </>
   );
