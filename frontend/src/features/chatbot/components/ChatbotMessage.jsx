@@ -28,6 +28,11 @@ export const ChatbotMessage = ({ message, isUser, onAction }) => {
       <div className="message-stack">
         <div className="message-content">
           <p>{message.content}</p>
+          {message.knowledgeArticle?.title && (
+            <span className="message-source">
+              Approved article · {message.knowledgeArticle.title} · v{message.knowledgeArticle.version}
+            </span>
+          )}
           {time && <span className="message-time">{time}</span>}
         </div>
         {!isUser && message.suggestedActions?.length > 0 && (

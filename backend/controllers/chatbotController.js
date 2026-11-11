@@ -10,6 +10,7 @@ import { createNotification } from "../utils/createNotification.js";
 import { getIO } from "../utils/ioInstance.js";
 import { getSupportResponse, testGroqConnection } from "../utils/groqChat.js";
 import { inspectSupportMessage } from "../utils/supportGuardrails.js";
+import { findApprovedSupportArticle } from "../utils/supportKnowledge.js";
 
 const MAX_CONVERSATION_MESSAGES = 60;
 
@@ -105,10 +106,16 @@ export const sendChatbotMessage = asyncHandler(async (req, res) => {
         : message;
     saveMessage(conversation, { role: "user", content: storedUserMessage, intent: inspection.intent });
 
+    const article = inspection.blocked
+        ? null
+        : await findApprovedSupportArticle(message, inspection.intent, "customer");
+
     let response = inspection.response;
-    if (!response) {
-        const result = await getSupportResponse(message, history);
+    if (article) {
+        const result = await getSupportResponse(message, history, article);
         response = result.response;
+    } else if (!response) {
+        response = "I don’t have an approved Mendly article for that yet. I can still help you track an order or repair, register a support request, or connect the issue to a human review.";
     }
 
     saveMessage(conversation, {
@@ -116,6 +123,11 @@ export const sendChatbotMessage = asyncHandler(async (req, res) => {
         content: response,
         intent: inspection.intent,
         suggestedActions: inspection.suggestedActions,
+        knowledgeArticle: article ? {
+            slug: article.slug,
+            title: article.title,
+            version: article.version,
+        } : undefined,
     });
     await conversation.save();
 
@@ -125,6 +137,11 @@ export const sendChatbotMessage = asyncHandler(async (req, res) => {
         intent: inspection.intent,
         blocked: inspection.blocked,
         suggestedActions: inspection.suggestedActions,
+        sourceArticle: article ? {
+            slug: article.slug,
+            title: article.title,
+            version: article.version,
+        } : null,
     });
 });
 

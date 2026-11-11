@@ -57,6 +57,7 @@ export const useChatbot = () => {
         content: data.response,
         intent: data.intent,
         suggestedActions: data.suggestedActions || [],
+        knowledgeArticle: data.sourceArticle,
         createdAt: new Date().toISOString(),
       }]);
       return data;

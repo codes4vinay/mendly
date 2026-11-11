@@ -8,12 +8,15 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import { initIO } from "./utils/socketIO.js";
 import { setIO } from "./utils/ioInstance.js";
+import { ensureDefaultSupportArticles } from "./utils/supportKnowledge.js";
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
         await connectDB();           // wait for DB before accepting requests
+        await ensureDefaultSupportArticles();
+        console.log("Support knowledge base ready");
 
         const server = app.listen(PORT, "0.0.0.0", () => {
             console.log(`Server running on port ${PORT} [${process.env.NODE_ENV}]`);

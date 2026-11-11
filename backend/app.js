@@ -17,6 +17,7 @@ import reviewRoutes from "./routes/review.js";
 import notificationRoutes from "./routes/notification.js";
 import chatRoutes from "./routes/chat.js";
 import chatbotRoutes from "./routes/chatbot.js";
+import supportArticleRoutes from "./routes/supportArticle.js";
 import adminRoutes from "./routes/admin.js";
 import uploadRoutes from "./routes/upload.js";
 import { isOriginAllowed, allowedOrigins } from "./utils/allowedOrigins.js";
@@ -63,6 +64,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/support-articles", supportArticleRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/uploads", uploadRoutes);
 

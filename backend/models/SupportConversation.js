@@ -3,9 +3,14 @@ import mongoose from "mongoose";
 const supportMessageSchema = new mongoose.Schema(
     {
         role: { type: String, enum: ["user", "assistant"], required: true },
-        content: { type: String, required: true, maxlength: 2000 },
+        content: { type: String, required: true, maxlength: 5000 },
         intent: { type: String, default: "general" },
         suggestedActions: [{ type: String }],
+        knowledgeArticle: {
+            slug: { type: String, default: null },
+            title: { type: String, default: null },
+            version: { type: Number, default: null },
+        },
     },
     { timestamps: true, _id: false }
 );

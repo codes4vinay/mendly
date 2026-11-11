@@ -12,6 +12,7 @@ import {
   Star,
   MessageCircle,
   LifeBuoy,
+  BookOpenText,
   User,
   Menu,
   X,
@@ -53,6 +54,7 @@ const adminNavItems = [
   { label: "Orders", icon: ShoppingBag, path: "/admin/orders" },
   { label: "Reviews", icon: Star, path: "/admin/reviews" },
   { label: "Support", icon: LifeBuoy, path: "/admin/support" },
+  { label: "Knowledge Base", icon: BookOpenText, path: "/admin/knowledge" },
 ];
 
 const DashboardLayout = ({ children }) => {

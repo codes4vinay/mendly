@@ -35,7 +35,6 @@ By leveraging technology, Mendly enhances the repair experience for both users a
 - 📊 **Dashboard** - Manage bookings and orders
 - 👥 **Customer Management** - Track client interactions
 - 💰 **Revenue Analytics** - Monitor earnings
-- 📱 **Mobile App** - Work on the go
 - 🔔 **Notifications** - Real-time booking alerts
 
 ---
@@ -56,16 +55,15 @@ By leveraging technology, Mendly enhances the repair experience for both users a
 - **Express.js** - Web framework
 - **MongoDB** - Database
 - **JWT** - Authentication
-- **Groq LLM** - AI chatbot
-- **Pinecone** - Vector database for RAG
+- **Groq LLM** - Optional phrasing of approved support articles
 - **Razorpay** - Payment processing
 
-### AI & ML
+### Customer Support
 
-- **Groq SDK** - Language model API
-- **LangChain** - LLM framework
-- **Hugging Face Transformers** - Free local embeddings
-- **Pinecone** - Vector search
+- **SupportArticle** - Versioned, publishable MongoDB knowledge base
+- **Deterministic matching** - Intent and keyword routing without vector RAG
+- **Groq SDK** - Constrained wording from one matched, approved article
+- **SupportTicket** - Complaints, refunds, returns, feedback, and escalations
 
 ---
 
@@ -91,7 +89,7 @@ mendly/
 │   ├── middleware/             # Custom middleware
 │   ├── utils/                  # Helper functions
 │   ├── config/                 # Configuration files
-│   ├── docs/                   # Documentation
+│   ├── data/                   # Reviewed default support articles
 │   ├── server.js               # Entry point
 │   └── package.json
 │
@@ -104,7 +102,7 @@ mendly/
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v18 through v23)
 - MongoDB
 - Git
 
@@ -165,18 +163,13 @@ CLOUDINARY_API_KEY=your_api_key
 # AI & Chatbot
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=openai/gpt-oss-120b
-EMBEDDING_PROVIDER=local-hash
-EMBEDDING_MODEL=rpar-local-embedding-v1
-EMBEDDING_DIMENSION=1536
-PINCONE_API_KEY=your_pinecone_key
-PINCONE_INDEX_NAME=rpar-chatbot-index
 
 # Email
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
 ```
 
-If you are switching from Azure embeddings to the local `rpar-local-embedding-v1` setup, make sure your Pinecone index dimension matches `1536`. If your old index or namespace was created for earlier embeddings, re-index the chatbot documentation after restarting the backend.
+The Groq key is optional. Without it, Mendly returns the matched approved article directly. The server bootstraps reviewed default articles only when their slugs do not already exist, so admin edits are preserved.
 
 ---
 
@@ -198,11 +191,22 @@ If you are switching from Azure embeddings to the local `rpar-local-embedding-v1
 
 ### Chatbot Endpoints
 
-- `POST /api/chatbot/new` - Start conversation
-- `POST /api/chatbot/message` - Send message
-- `GET /api/chatbot/conversation/:id` - Get conversation history
+- `POST /api/chatbot/new` - Start an authenticated support conversation
+- `POST /api/chatbot/message` - Send a guarded support message
+- `GET /api/chatbot/context` - Fetch customer-safe order and repair context
+- `POST /api/chatbot/tickets` - Register a complaint, refund, return, or feedback request
+- `POST /api/chatbot/actions/cancel` - Confirm an eligible order or repair cancellation
+- `GET /api/chatbot/admin/tickets` - Admin support queue
 
-For complete API documentation, see [backend/docs/mendly-documentation.txt](backend/docs/mendly-documentation.txt)
+### Knowledge Base Endpoints
+
+- `GET /api/support-articles` - List published customer articles
+- `GET /api/support-articles/:slug` - Read one published article
+- `GET /api/support-articles/admin` - Admin article management
+- `POST /api/support-articles/admin` - Create a draft or published article
+- `PUT /api/support-articles/admin/:id` - Edit, publish, or archive an article
+
+The bot does not use embeddings or vector search. It retrieves a published article by controlled intent and keyword matching; if Groq is configured, the model may rephrase only that article's approved content.
 
 ---
 

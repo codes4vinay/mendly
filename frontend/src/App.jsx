@@ -54,6 +54,7 @@ import AdminBookings from "./pages/admin/Bookings";
 import AdminOrders from "./pages/admin/Orders";
 import AdminReviews from "./pages/admin/Reviews";
 import AdminSupportTickets from "./pages/admin/SupportTickets";
+import AdminKnowledgeBase from "./pages/admin/KnowledgeBase";
 
 // shared
 import NotFound from "./pages/NotFound";
@@ -151,6 +152,7 @@ const App = () => {
             <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="/admin/reviews" element={<AdminReviews />} />
             <Route path="/admin/support" element={<AdminSupportTickets />} />
+            <Route path="/admin/knowledge" element={<AdminKnowledgeBase />} />
           </Route>
         </Route>
 
